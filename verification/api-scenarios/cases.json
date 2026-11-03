@@ -1,0 +1,5723 @@
+{
+  "format": "filescom-powershell-api-scenarios/1",
+  "definition": {
+    "path": "/builds/repository/files-sdk-generator/verification/scenarios/api.json",
+    "sha256": "5d9b8eff0ef0724a68a458db77dc85784bb7d24436f104b98c2a2fe67086bbe0",
+    "format": "files-api-scenarios",
+    "format_version": 1
+  },
+  "schema_sha256": "b12190537951d1d0226435498587f07b3e78027f1cd49a69ebd127bc6c0f7c9b",
+  "module_version": "1.1.0",
+  "recipes": [
+    {
+      "number": 1,
+      "multiplier": 131,
+      "offset": 17,
+      "modulus": 251,
+      "length": 65539,
+      "sha256": "b65094d36ac1009dac9c73c27b48638a47eb7f23d219a80d1b4d05b58f514499"
+    },
+    {
+      "number": 2,
+      "multiplier": 1,
+      "offset": 0,
+      "modulus": 256,
+      "length": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "number": 3,
+      "multiplier": 29,
+      "offset": 101,
+      "modulus": 256,
+      "length": 65537,
+      "sha256": "ed5a86d5b614d5385a85c170c15f25fe75c3faab6a8b29abbb470a6c51faa7f9"
+    },
+    {
+      "number": 4,
+      "multiplier": 37,
+      "offset": 5,
+      "modulus": 256,
+      "length": 1031,
+      "sha256": "29f483b8739ae2de994d4794133a7a858a0f0416caa03e5a96165af41ebdf3e8"
+    },
+    {
+      "number": 5,
+      "multiplier": 41,
+      "offset": 11,
+      "modulus": 256,
+      "length": 2053,
+      "sha256": "83298104fe01d905ee9ce8fae2f23da08007b5e8ab356d5bfc064b49c2664b98"
+    },
+    {
+      "number": 6,
+      "multiplier": 43,
+      "offset": 3,
+      "modulus": 256,
+      "length": 517,
+      "sha256": "b664357b3151e48ca4c5c6c452dd20d58293897f887536f6e0e0627c0d8cd25b"
+    },
+    {
+      "number": 7,
+      "multiplier": 47,
+      "offset": 19,
+      "modulus": 256,
+      "length": 4099,
+      "sha256": "9f251477458622d9da868e31b8708ec638d8ba9a01c9b575bb8c0a0764734521"
+    },
+    {
+      "number": 8,
+      "multiplier": 53,
+      "offset": 23,
+      "modulus": 251,
+      "length": 6291459,
+      "sha256": "4ab1615925cb4b1fa9b9ddc3345a920200888d8ba7d3ae1b880aa6c0c19f87fa"
+    },
+    {
+      "number": 9,
+      "multiplier": 59,
+      "offset": 29,
+      "modulus": 251,
+      "length": 6291461,
+      "sha256": "d7a71574a24faecb2fea4915b8096a86a43b19db98d440f16730caac0a66cfd4"
+    },
+    {
+      "number": 10,
+      "multiplier": 61,
+      "offset": 7,
+      "modulus": 256,
+      "length": 1543,
+      "sha256": "983f31356cea338492c47d6c9c979deb3a45914fe6aa8eafa96cd44e02f08e9d"
+    },
+    {
+      "number": 11,
+      "multiplier": 67,
+      "offset": 13,
+      "modulus": 256,
+      "length": 2089,
+      "sha256": "03e528690696066e61d8a65fa0fac38974bb95cb0d31874240287f325484fddb"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "files.owned-folder-namespace",
+      "summary": "Folders made one at a time inside the owned folder: each found by path, an existing name refused, the owned folder listed one entry per page with exactly its own children, and every folder deleted and confirmed absent. API operations only.",
+      "positions": {
+        "total": 25,
+        "simulator": 23,
+        "site_only": 2
+      },
+      "fixtures": {
+        "folder": {
+          "type": "directory",
+          "path": "",
+          "recipe": null
+        },
+        "alpha": {
+          "type": "directory",
+          "path": "alpha",
+          "recipe": null
+        },
+        "bravo": {
+          "type": "directory",
+          "path": "bravo",
+          "recipe": null
+        },
+        "charlie": {
+          "type": "directory",
+          "path": "charlie",
+          "recipe": null
+        },
+        "alpha-inner": {
+          "type": "directory",
+          "path": "alpha/inner",
+          "recipe": null
+        }
+      },
+      "steps": [
+        {
+          "number": 1,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            }
+          ],
+          "expect": {
+            "status": 422,
+            "error": "bad-request/request-params-required"
+          }
+        },
+        {
+          "number": 2,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": null,
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 3,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /behaviors/folders/{path}",
+            "operation_id": "BehaviorListForPath",
+            "method": "GET",
+            "path": "/behaviors/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFolderBehavior",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "ancestor_behaviors",
+              "parameter": "AncestorBehaviors",
+              "identity": false,
+              "value": true
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 100
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+
+              ],
+              "per_page": 100,
+              "max_pages": 5,
+              "max_records": 500
+            }
+          }
+        },
+        {
+          "number": 4,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found"
+          }
+        },
+        {
+          "number": 5,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 6,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "permissions",
+                  "property": "permissions",
+                  "matcher": {
+                    "includes": [
+                      "l",
+                      "r",
+                      "w",
+                      "d"
+                    ]
+                  }
+                },
+                {
+                  "name": "is_locked",
+                  "property": "is_locked",
+                  "matcher": {
+                    "not": true
+                  }
+                },
+                {
+                  "name": "subfolders_locked?",
+                  "property": "subfolders_locked?",
+                  "matcher": {
+                    "not": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 7,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "alpha",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 8,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "bravo"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "bravo",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 9,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "charlie"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "charlie",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 10,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha-inner"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "alpha-inner",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 11,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 422,
+            "error": "processing-failure/destination-exists"
+          }
+        },
+        {
+          "number": 12,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "alpha",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 13,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha-inner"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "alpha-inner",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 14,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "alpha",
+                "bravo",
+                "charlie"
+              ],
+              "per_page": 1,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 15,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "alpha-inner"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 16,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha-inner"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 17,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha-inner"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 18,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 19,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "alpha"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 20,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "bravo"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 21,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "bravo"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 22,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "charlie"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 23,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "charlie"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 24,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 25,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "files.owned-binary-roundtrip",
+      "summary": "Three owned files (from a local file, a seekable stream and a forward-only stream giving at most three bytes per read) uploaded with a provided mtime, each found with its exact size, the owned folder listed one entry per page with exactly those files, each downloaded byte for byte, and everything deleted and confirmed absent. Conserved from verification/files-paired/contract.json revision 3 and its journeys.",
+      "positions": {
+        "total": 24,
+        "simulator": 22,
+        "site_only": 2
+      },
+      "fixtures": {
+        "folder": {
+          "type": "directory",
+          "path": "",
+          "recipe": null
+        },
+        "binary.bin": {
+          "type": "file",
+          "path": "binary.bin",
+          "recipe": {
+            "number": 1,
+            "multiplier": 131,
+            "offset": 17,
+            "modulus": 251,
+            "length": 65539,
+            "sha256": "b65094d36ac1009dac9c73c27b48638a47eb7f23d219a80d1b4d05b58f514499"
+          }
+        },
+        "empty.bin": {
+          "type": "file",
+          "path": "empty.bin",
+          "recipe": {
+            "number": 2,
+            "multiplier": 1,
+            "offset": 0,
+            "modulus": 256,
+            "length": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "short-read.bin": {
+          "type": "file",
+          "path": "short-read.bin",
+          "recipe": {
+            "number": 3,
+            "multiplier": 29,
+            "offset": 101,
+            "modulus": 256,
+            "length": 65537,
+            "sha256": "ed5a86d5b614d5385a85c170c15f25fe75c3faab6a8b29abbb470a6c51faa7f9"
+          }
+        }
+      },
+      "steps": [
+        {
+          "number": 1,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            }
+          ],
+          "expect": {
+            "status": 422,
+            "error": "bad-request/request-params-required"
+          }
+        },
+        {
+          "number": 2,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": null,
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 3,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /behaviors/folders/{path}",
+            "operation_id": "BehaviorListForPath",
+            "method": "GET",
+            "path": "/behaviors/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFolderBehavior",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "ancestor_behaviors",
+              "parameter": "AncestorBehaviors",
+              "identity": false,
+              "value": true
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 100
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+
+              ],
+              "per_page": 100,
+              "max_pages": 5,
+              "max_records": 500
+            }
+          }
+        },
+        {
+          "number": 4,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found"
+          }
+        },
+        {
+          "number": 5,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 6,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "permissions",
+                  "property": "permissions",
+                  "matcher": {
+                    "includes": [
+                      "l",
+                      "r",
+                      "w",
+                      "d"
+                    ]
+                  }
+                },
+                {
+                  "name": "is_locked",
+                  "property": "is_locked",
+                  "matcher": {
+                    "not": true
+                  }
+                },
+                {
+                  "name": "subfolders_locked?",
+                  "property": "subfolders_locked?",
+                  "matcher": {
+                    "not": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 7,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "binary.bin",
+          "details": {
+            "source": "local-file",
+            "parameters": {
+              "provided_mtime": "2026-09-24T00:00:00Z"
+            }
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "binary.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "binary.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "provided_mtime",
+                  "property": "provided_mtime",
+                  "matcher": {
+                    "one_of": [
+                      "2026-09-24T00:00:00Z",
+                      null
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 9,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "empty.bin",
+          "details": {
+            "source": "seekable-stream",
+            "parameters": {
+              "provided_mtime": "2026-09-24T00:00:00Z"
+            }
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "empty.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "empty.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "provided_mtime",
+                  "property": "provided_mtime",
+                  "matcher": {
+                    "one_of": [
+                      "2026-09-24T00:00:00Z",
+                      null
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 11,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "short-read.bin",
+          "details": {
+            "source": "forward-only-stream",
+            "max_read": 3,
+            "parameters": {
+              "provided_mtime": "2026-09-24T00:00:00Z"
+            }
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "short-read.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "short-read.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "provided_mtime",
+                  "property": "provided_mtime",
+                  "matcher": {
+                    "one_of": [
+                      "2026-09-24T00:00:00Z",
+                      null
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 13,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "binary.bin",
+                "empty.bin",
+                "short-read.bin"
+              ],
+              "per_page": 1,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 14,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "binary.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "empty.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "short-read.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "binary.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 18,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "binary.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 19,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "empty.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 20,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "empty.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 21,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "short-read.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 22,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "short-read.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 23,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 24,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "files.owned-namespace-extended",
+      "summary": "Literal special-character names (#, %, a non-ASCII letter and a space), a nested folder, a multipart upload stored in at least two parts with its final progress, a copy and a move waited for, a one-entry-per-page listing whose returned entries download their own files, byte-exact downloads, an upload cancelled after its first acknowledged part that publishes nothing, and non-recursive deletes confirmed by absence. Conserved from verification/files-paired/contract-extended.json revision 2 and its journeys.",
+      "positions": {
+        "total": 48,
+        "simulator": 46,
+        "site_only": 2
+      },
+      "fixtures": {
+        "folder": {
+          "type": "directory",
+          "path": "",
+          "recipe": null
+        },
+        "hash-name": {
+          "type": "file",
+          "path": "a#b.txt",
+          "recipe": {
+            "number": 4,
+            "multiplier": 37,
+            "offset": 5,
+            "modulus": 256,
+            "length": 1031,
+            "sha256": "29f483b8739ae2de994d4794133a7a858a0f0416caa03e5a96165af41ebdf3e8"
+          }
+        },
+        "percent-name": {
+          "type": "file",
+          "path": "100%.txt",
+          "recipe": {
+            "number": 5,
+            "multiplier": 41,
+            "offset": 11,
+            "modulus": 256,
+            "length": 2053,
+            "sha256": "83298104fe01d905ee9ce8fae2f23da08007b5e8ab356d5bfc064b49c2664b98"
+          }
+        },
+        "unicode-name": {
+          "type": "file",
+          "path": "é +.txt",
+          "recipe": {
+            "number": 6,
+            "multiplier": 43,
+            "offset": 3,
+            "modulus": 256,
+            "length": 517,
+            "sha256": "b664357b3151e48ca4c5c6c452dd20d58293897f887536f6e0e0627c0d8cd25b"
+          }
+        },
+        "nested": {
+          "type": "directory",
+          "path": "nested",
+          "recipe": null
+        },
+        "inner.bin": {
+          "type": "file",
+          "path": "nested/inner.bin",
+          "recipe": {
+            "number": 7,
+            "multiplier": 47,
+            "offset": 19,
+            "modulus": 256,
+            "length": 4099,
+            "sha256": "9f251477458622d9da868e31b8708ec638d8ba9a01c9b575bb8c0a0764734521"
+          }
+        },
+        "large.bin": {
+          "type": "file",
+          "path": "large.bin",
+          "recipe": {
+            "number": 8,
+            "multiplier": 53,
+            "offset": 23,
+            "modulus": 251,
+            "length": 6291459,
+            "sha256": "4ab1615925cb4b1fa9b9ddc3345a920200888d8ba7d3ae1b880aa6c0c19f87fa"
+          }
+        },
+        "copied.bin": {
+          "type": "file",
+          "path": "copied.bin",
+          "recipe": {
+            "number": 7,
+            "multiplier": 47,
+            "offset": 19,
+            "modulus": 256,
+            "length": 4099,
+            "sha256": "9f251477458622d9da868e31b8708ec638d8ba9a01c9b575bb8c0a0764734521"
+          }
+        },
+        "moved.bin": {
+          "type": "file",
+          "path": "nested/moved.bin",
+          "recipe": {
+            "number": 7,
+            "multiplier": 47,
+            "offset": 19,
+            "modulus": 256,
+            "length": 4099,
+            "sha256": "9f251477458622d9da868e31b8708ec638d8ba9a01c9b575bb8c0a0764734521"
+          }
+        },
+        "cancelled.bin": {
+          "type": "file",
+          "path": "cancelled.bin",
+          "recipe": {
+            "number": 9,
+            "multiplier": 59,
+            "offset": 29,
+            "modulus": 251,
+            "length": 6291461,
+            "sha256": "d7a71574a24faecb2fea4915b8096a86a43b19db98d440f16730caac0a66cfd4"
+          }
+        }
+      },
+      "steps": [
+        {
+          "number": 1,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            }
+          ],
+          "expect": {
+            "status": 422,
+            "error": "bad-request/request-params-required"
+          }
+        },
+        {
+          "number": 2,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": null,
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 3,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /behaviors/folders/{path}",
+            "operation_id": "BehaviorListForPath",
+            "method": "GET",
+            "path": "/behaviors/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFolderBehavior",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "ancestor_behaviors",
+              "parameter": "AncestorBehaviors",
+              "identity": false,
+              "value": true
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 100
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+
+              ],
+              "per_page": 100,
+              "max_pages": 5,
+              "max_records": 500
+            }
+          }
+        },
+        {
+          "number": 4,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found"
+          }
+        },
+        {
+          "number": 5,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 6,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "permissions",
+                  "property": "permissions",
+                  "matcher": {
+                    "includes": [
+                      "l",
+                      "r",
+                      "w",
+                      "d"
+                    ]
+                  }
+                },
+                {
+                  "name": "is_locked",
+                  "property": "is_locked",
+                  "matcher": {
+                    "not": true
+                  }
+                },
+                {
+                  "name": "subfolders_locked?",
+                  "property": "subfolders_locked?",
+                  "matcher": {
+                    "not": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 7,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "hash-name",
+          "details": {
+            "source": "local-file"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "hash-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "hash-name",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 9,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "percent-name",
+          "details": {
+            "source": "local-file"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "percent-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "percent-name",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 11,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "unicode-name",
+          "details": {
+            "source": "local-file"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "unicode-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "unicode-name",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 13,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "nested"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "nested",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 14,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "inner.bin",
+          "details": {
+            "source": "seekable-stream"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "inner.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "inner.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 16,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "large.bin",
+          "details": {
+            "source": "local-file"
+          },
+          "expect": {
+            "completed": true,
+            "progress_final": {
+              "total_bytes": "recipe-length",
+              "acknowledged_bytes": "recipe-length"
+            },
+            "min_parts": 2
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "large.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "large.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 18,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "copy",
+          "fixture": "copied.bin",
+          "details": {
+            "from": "inner.bin"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/copy/{path}",
+              "operation_id": "FileActionCopy",
+              "method": "POST",
+              "path": "/file_actions/copy/{path}"
+            },
+            {
+              "route": "GET /file_migrations/{id}",
+              "operation_id": "GetFileMigrationsId",
+              "method": "GET",
+              "path": "/file_migrations/{id}"
+            }
+          ],
+          "action": {
+            "route": "POST /file_actions/copy/{path}",
+            "operation_id": "FileActionCopy",
+            "command": "Copy-FilesFile",
+            "mutation": true,
+            "parameters": {
+              "path": "Path",
+              "destination": "Destination",
+              "copy_behaviors": "CopyBehaviors",
+              "structure": "Structure",
+              "overwrite": "Overwrite"
+            }
+          }
+        },
+        {
+          "number": 19,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copied.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "copied.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 20,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "move",
+          "fixture": "moved.bin",
+          "details": {
+            "from": "copied.bin"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/move/{path}",
+              "operation_id": "FileActionMove",
+              "method": "POST",
+              "path": "/file_actions/move/{path}"
+            },
+            {
+              "route": "GET /file_migrations/{id}",
+              "operation_id": "GetFileMigrationsId",
+              "method": "GET",
+              "path": "/file_migrations/{id}"
+            }
+          ],
+          "action": {
+            "route": "POST /file_actions/move/{path}",
+            "operation_id": "FileActionMove",
+            "command": "Move-FilesFile",
+            "mutation": true,
+            "parameters": {
+              "path": "Path",
+              "destination": "Destination",
+              "overwrite": "Overwrite"
+            }
+          }
+        },
+        {
+          "number": 21,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copied.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 22,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "moved.bin",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 23,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "hash-name",
+                "percent-name",
+                "unicode-name",
+                "nested",
+                "large.bin"
+              ],
+              "per_page": 1,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 24,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "hash-name",
+          "details": {
+            "source": "listed-entry"
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "percent-name",
+          "details": {
+            "source": "listed-entry"
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "unicode-name",
+          "details": {
+            "source": "listed-entry"
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "large.bin",
+          "details": {
+            "source": "listed-entry"
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "inner.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "moved.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "large.bin",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload",
+          "fixture": "cancelled.bin",
+          "details": {
+            "source": "local-file",
+            "cancel": "after-first-acknowledged-part"
+          },
+          "expect": {
+            "cancelled": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "cancelled.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 33,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 34,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 35,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "inner.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 36,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "inner.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 37,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "nested"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 38,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "nested"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 39,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "large.bin"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 40,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "large.bin"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 41,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "hash-name"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 42,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "hash-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 43,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "percent-name"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 44,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "percent-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 45,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "unicode-name"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 46,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "unicode-name"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 47,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 48,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "files.owned-directory-helpers",
+      "summary": "A local tree uploaded as a directory, each entry it made found and each folder listed with exactly its own entries, the tree downloaded as a directory byte for byte, a folder copied and the copy moved (each waited for), the moved file downloaded, and non-recursive deletes, deepest first, confirmed by absence. Conserved from verification/files-paired/contract-helpers.json revision 1 and its journeys.",
+      "positions": {
+        "total": 44,
+        "simulator": 42,
+        "site_only": 2
+      },
+      "fixtures": {
+        "folder": {
+          "type": "directory",
+          "path": "",
+          "recipe": null
+        },
+        "up": {
+          "type": "directory",
+          "path": "up",
+          "recipe": null
+        },
+        "up-a": {
+          "type": "file",
+          "path": "up/a.bin",
+          "recipe": {
+            "number": 10,
+            "multiplier": 61,
+            "offset": 7,
+            "modulus": 256,
+            "length": 1543,
+            "sha256": "983f31356cea338492c47d6c9c979deb3a45914fe6aa8eafa96cd44e02f08e9d"
+          }
+        },
+        "up-sub": {
+          "type": "directory",
+          "path": "up/sub",
+          "recipe": null
+        },
+        "up-b": {
+          "type": "file",
+          "path": "up/sub/b.bin",
+          "recipe": {
+            "number": 11,
+            "multiplier": 67,
+            "offset": 13,
+            "modulus": 256,
+            "length": 2089,
+            "sha256": "03e528690696066e61d8a65fa0fac38974bb95cb0d31874240287f325484fddb"
+          }
+        },
+        "up-empty": {
+          "type": "directory",
+          "path": "up/empty",
+          "recipe": null
+        },
+        "copy": {
+          "type": "directory",
+          "path": "copy",
+          "recipe": null
+        },
+        "copy-b": {
+          "type": "file",
+          "path": "copy/b.bin",
+          "recipe": {
+            "number": 11,
+            "multiplier": 67,
+            "offset": 13,
+            "modulus": 256,
+            "length": 2089,
+            "sha256": "03e528690696066e61d8a65fa0fac38974bb95cb0d31874240287f325484fddb"
+          }
+        },
+        "moved": {
+          "type": "directory",
+          "path": "moved",
+          "recipe": null
+        },
+        "moved-b": {
+          "type": "file",
+          "path": "moved/b.bin",
+          "recipe": {
+            "number": 11,
+            "multiplier": 67,
+            "offset": 13,
+            "modulus": 256,
+            "length": 2089,
+            "sha256": "03e528690696066e61d8a65fa0fac38974bb95cb0d31874240287f325484fddb"
+          }
+        }
+      },
+      "steps": [
+        {
+          "number": 1,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            }
+          ],
+          "expect": {
+            "status": 422,
+            "error": "bad-request/request-params-required"
+          }
+        },
+        {
+          "number": 2,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": null,
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 3,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /behaviors/folders/{path}",
+            "operation_id": "BehaviorListForPath",
+            "method": "GET",
+            "path": "/behaviors/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFolderBehavior",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": "/"
+            },
+            {
+              "wire_name": "ancestor_behaviors",
+              "parameter": "AncestorBehaviors",
+              "identity": false,
+              "value": true
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 100
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+
+              ],
+              "per_page": 100,
+              "max_pages": 5,
+              "max_records": 500
+            }
+          }
+        },
+        {
+          "number": 4,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found"
+          }
+        },
+        {
+          "number": 5,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "POST /folders/{path}",
+            "operation_id": "PostFoldersPath",
+            "method": "POST",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "New-FilesFolder",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "mkdir_parents",
+              "parameter": "MkdirParents",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 201,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 6,
+          "backend": "site",
+          "applies": false,
+          "omission": "backend site: The generated mock server in simulation mode. Steps marked \"backend\": \"site\" are excluded here, never passed: the simulator has no permissions, inherited behaviors or creators.",
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "folder",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+                {
+                  "name": "permissions",
+                  "property": "permissions",
+                  "matcher": {
+                    "includes": [
+                      "l",
+                      "r",
+                      "w",
+                      "d"
+                    ]
+                  }
+                },
+                {
+                  "name": "is_locked",
+                  "property": "is_locked",
+                  "matcher": {
+                    "not": true
+                  }
+                },
+                {
+                  "name": "subfolders_locked?",
+                  "property": "subfolders_locked?",
+                  "matcher": {
+                    "not": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "number": 7,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "upload-directory",
+          "fixture": "up",
+          "details": {
+            "tree": [
+              "up-a",
+              "up-sub",
+              "up-b",
+              "up-empty"
+            ]
+          },
+          "expect": {
+            "completed": [
+              "up-a",
+              "up-b"
+            ],
+            "files": 2,
+            "empty_folders": 1,
+            "bytes": 3632
+          },
+          "operations": [
+            {
+              "route": "POST /folders/{path}",
+              "operation_id": "PostFoldersPath",
+              "method": "POST",
+              "path": "/folders/{path}"
+            },
+            {
+              "route": "POST /file_actions/begin_upload/{path}",
+              "operation_id": "FileActionBeginUpload",
+              "method": "POST",
+              "path": "/file_actions/begin_upload/{path}"
+            },
+            {
+              "route": "POST /files/{path}",
+              "operation_id": "PostFilesPath",
+              "method": "POST",
+              "path": "/files/{path}"
+            }
+          ],
+          "tree": {
+            "directories": [
+              "empty",
+              "sub"
+            ],
+            "empty_directories": [
+              "empty"
+            ],
+            "files": [
+              "a.bin",
+              "sub/b.bin"
+            ]
+          }
+        },
+        {
+          "number": 8,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "up",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 9,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-a"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "up-a",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 10,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-sub"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "up-sub",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 11,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "up-b",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 12,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-empty"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "up-empty",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 13,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "up-a",
+                "up-sub",
+                "up-empty"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 14,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-sub"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "up-b"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 15,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-empty"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 16,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download-directory",
+          "fixture": "up",
+          "details": {
+          },
+          "expect": {
+            "files": 2,
+            "empty_folders": 1,
+            "bytes": 3632,
+            "bytes_match": [
+              "up-a",
+              "up-b"
+            ]
+          },
+          "operations": [
+            {
+              "route": "GET /folders/{path}",
+              "operation_id": "FolderListForPath",
+              "method": "GET",
+              "path": "/folders/{path}"
+            },
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ],
+          "tree": {
+            "directories": [
+              "empty",
+              "sub"
+            ],
+            "empty_directories": [
+              "empty"
+            ],
+            "files": [
+              "a.bin",
+              "sub/b.bin"
+            ]
+          }
+        },
+        {
+          "number": 17,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "copy",
+          "fixture": "copy",
+          "details": {
+            "from": "up-sub"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/copy/{path}",
+              "operation_id": "FileActionCopy",
+              "method": "POST",
+              "path": "/file_actions/copy/{path}"
+            },
+            {
+              "route": "GET /file_migrations/{id}",
+              "operation_id": "GetFileMigrationsId",
+              "method": "GET",
+              "path": "/file_migrations/{id}"
+            }
+          ],
+          "action": {
+            "route": "POST /file_actions/copy/{path}",
+            "operation_id": "FileActionCopy",
+            "command": "Copy-FilesFile",
+            "mutation": true,
+            "parameters": {
+              "path": "Path",
+              "destination": "Destination",
+              "copy_behaviors": "CopyBehaviors",
+              "structure": "Structure",
+              "overwrite": "Overwrite"
+            }
+          }
+        },
+        {
+          "number": 18,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copy"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "copy",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 19,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copy-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "copy-b",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 20,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copy"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "copy-b"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 21,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "move",
+          "fixture": "moved",
+          "details": {
+            "from": "copy"
+          },
+          "expect": {
+            "completed": true
+          },
+          "operations": [
+            {
+              "route": "POST /file_actions/move/{path}",
+              "operation_id": "FileActionMove",
+              "method": "POST",
+              "path": "/file_actions/move/{path}"
+            },
+            {
+              "route": "GET /file_migrations/{id}",
+              "operation_id": "GetFileMigrationsId",
+              "method": "GET",
+              "path": "/file_migrations/{id}"
+            }
+          ],
+          "action": {
+            "route": "POST /file_actions/move/{path}",
+            "operation_id": "FileActionMove",
+            "command": "Move-FilesFile",
+            "mutation": true,
+            "parameters": {
+              "path": "Path",
+              "destination": "Destination",
+              "overwrite": "Overwrite"
+            }
+          }
+        },
+        {
+          "number": 22,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copy-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 23,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "copy"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 24,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "moved",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 25,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "entry": {
+              "fixture": "moved-b",
+              "type": null,
+              "path_one_of": null,
+              "fields": [
+
+              ]
+            }
+          }
+        },
+        {
+          "number": 26,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "moved-b"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 27,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /folders/{path}",
+            "operation_id": "FolderListForPath",
+            "method": "GET",
+            "path": "/folders/{path}"
+          },
+          "command": {
+            "name": "Get-FilesChildItem",
+            "paged": true,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "per_page",
+              "parameter": "PerPage",
+              "identity": false,
+              "value": 1000
+            }
+          ],
+          "expect": {
+            "status": 200,
+            "listing": {
+              "entries": [
+                "up",
+                "moved"
+              ],
+              "per_page": 1000,
+              "max_pages": 16,
+              "max_records": null
+            }
+          }
+        },
+        {
+          "number": 28,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "intent",
+          "intent": "download",
+          "fixture": "moved-b",
+          "details": {
+          },
+          "expect": {
+            "bytes": "recipe"
+          },
+          "operations": [
+            {
+              "route": "GET /files/{path}",
+              "operation_id": "FileDownload",
+              "method": "GET",
+              "path": "/files/{path}"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved-b"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 30,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 31,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 32,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "moved"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 33,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-b"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 34,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-b"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 35,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-sub"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 36,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-sub"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 37,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-empty"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 38,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-empty"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 39,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-a"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 40,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up-a"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 41,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 42,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "up"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        },
+        {
+          "number": 43,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "DELETE /files/{path}",
+            "operation_id": "DeleteFilesPath",
+            "method": "DELETE",
+            "path": "/files/{path}"
+          },
+          "command": {
+            "name": "Remove-FilesFile",
+            "paged": null,
+            "mutation": true
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            },
+            {
+              "wire_name": "recursive",
+              "parameter": "Recursive",
+              "identity": false,
+              "value": false
+            }
+          ],
+          "expect": {
+            "status": 204
+          }
+        },
+        {
+          "number": 44,
+          "backend": "simulator-and-site",
+          "applies": true,
+          "omission": null,
+          "kind": "operation",
+          "operation": {
+            "route": "GET /file_actions/metadata/{path}",
+            "operation_id": "FileActionFind",
+            "method": "GET",
+            "path": "/file_actions/metadata/{path}"
+          },
+          "command": {
+            "name": "Get-FilesFile",
+            "paged": null,
+            "mutation": false
+          },
+          "arguments": [
+            {
+              "wire_name": "path",
+              "parameter": "Path",
+              "identity": true,
+              "value": {
+                "fixture": "folder"
+              }
+            }
+          ],
+          "expect": {
+            "status": 404,
+            "error": "not-found",
+            "attempts": 5,
+            "interval_seconds": 1
+          }
+        }
+      ]
+    }
+  ]
+}

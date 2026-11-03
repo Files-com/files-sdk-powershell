@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Runs operations with the FilesCom .NET SDK and translates between its types and the module's contracts. The
+    module loads this assembly and the SDK's complete dependency closure from its own directory: into a private load
+    context on PowerShell 7, and beside the Windows PowerShell commands on .NET Framework.
+  -->
+  <PropertyGroup>
+    <!--
+      net8.0, net10.0 and net48 are the builds the module ships. netstandard2.0 is only what the .NET Standard commands
+      compile against; it is never shipped or loaded.
+    -->
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0;net48</TargetFrameworks>
+    <AssemblyName>FilesCom.PowerShell.Engine</AssemblyName>
+    <RootNamespace>FilesCom.PowerShell.Engine</RootNamespace>
+    <!-- The engine's output directory holds its complete dependency closure, which the module ships beside it. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- Generated bridges document their model's properties; internal members need no XML documentation. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- The contracts load once, beside the commands, so both sides agree on their types. -->
+    <ProjectReference Include="../FilesCom.PowerShell.Contracts/FilesCom.PowerShell.Contracts.csproj" Private="false" />
+    <!-- PrivateAssets keeps SDK types out of the commands' compilation: only the engine may use them. -->
+    <PackageReference Include="FilesCom" Version="$(FilesComEngineVersion)" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,556 @@
+TOPIC
+    about_FilesCom
+
+SHORT DESCRIPTION
+    Manage a Files.com site with the FilesCom.PowerShell module.
+
+LONG DESCRIPTION
+    The FilesCom.PowerShell module has a command for every operation of the
+    Files.com API, such as Get-FilesUser, New-FilesGroup and
+    Set-FilesPermission, commands that transfer files: Send-FilesFile,
+    Send-FilesDirectory, Receive-FilesFile and Receive-FilesDirectory, and
+    commands that use remote files the way local ones are: Test-FilesPath,
+    Get-FilesFileContent, Set-FilesFileContent, Open-FilesFileReadStream,
+    Open-FilesFileWriteStream and Wait-FilesFileAction.
+    The commands run on the Files.com .NET SDK, which the module ships
+    with its dependencies and loads in a load context of its own, apart
+    from the assemblies other modules load.
+
+    Commands write typed objects, such as FilesCom.PowerShell.Models.User,
+    that you can filter, sort, export and pipe into other FilesCom commands.
+
+    The module is supported on Windows, in PowerShell 7.4 and later;
+    Windows PowerShell 5.1 is not supported. On macOS and Linux it is not
+    supported: use the Files.com CLI or a language SDK there. It is a
+    binary module: importing it runs no script, as its own assembly sets
+    up the engine and the default display of its objects. The complete
+    example scripts in its examples folder are scripts, which run only
+    where the execution policy allows them; see the README there.
+
+  CONNECTING
+    Connect-FilesAccount connects to a site with an API key, an existing
+    session ID, or a username and password, and makes the connection the
+    default of the current runspace:
+
+        $apiKey = Get-Secret -Name FilesComApiKey
+        Connect-FilesAccount -ApiKey $apiKey -BaseUrl https://mysite.files.com
+
+    Commands use the default connection unless given -Connection. To work
+    with several sites, connect with -NoDefault and pass -Connection:
+
+        $acme = Connect-FilesAccount -ApiKey $acmeKey -NoDefault
+        Get-FilesUser -Connection $acme
+
+    Get-FilesConnection shows the default connection, and
+    Set-FilesConnection changes or clears it. A command with no connection
+    to use fails with Files.NoConnection.
+
+    Connections live only in the current session. The module reads no
+    profile, environment variable or configuration file, and saves nothing.
+    Keep credentials in a secret vault, such as with
+    Microsoft.PowerShell.SecretManagement, and pass them as SecureString.
+
+    Disconnect-FilesAccount closes a connection. When the connection signed
+    in with -Credential, it first revokes the session it created; API keys
+    and session IDs you supplied are never revoked.
+
+    When a user has two-factor authentication, signing in with -Credential
+    without -OneTimePassword, or where Files.com sends a code another way,
+    fails with Files.TwoFactorRequired. The error's TargetObject is a
+    FilesSignInChallenge; finish signing in with it and the user's code:
+
+        Connect-FilesAccount -Challenge $challenge -OneTimePassword 123456
+
+    The challenge never shows or saves the identifier of the partly
+    completed login, and finishes one sign-in.
+
+    -OperationTimeout bounds how long any one command using the connection
+    may run, from its start to its end, across all the pages, files,
+    retries and input objects it handles.
+
+    When Files.com answers that the site is served from another region's
+    address, a command moves on there as the connection's -RegionRelocation
+    allows: Automatic, the default, moves only to a verified HTTPS address
+    on port 443 with a public DNS name; Disabled never moves; a hashtable of
+    origin pairs moves only between the origins it lists, which a
+    development site may need:
+
+        Connect-FilesAccount -ApiKey $apiKey -BaseUrl http://localhost:8080 `
+            -RegionRelocation @{ 'http://localhost:8080' = 'http://localhost:8081' }
+
+    A command that moves keeps the new address for its remaining requests,
+    and so do the objects and pages it writes, for the commands given them
+    later. The connection's own address is unchanged. A command that does
+    not move fails with Files.RegionMismatch, naming the site's address.
+
+  RUNSPACES AND PARALLEL WORK
+    Each runspace has its own default connection. A connection belongs to
+    the runspace that made it and closes when that runspace closes. Other
+    runspaces may use it while it is open, for example:
+
+        $connection = Get-FilesConnection
+        1..10 | ForEach-Object -Parallel {
+            Get-FilesUser -Id $_ -Connection $using:connection
+        }
+
+    Objects written by a command remember the connection that fetched them,
+    so piping them to another command uses the same connection. Giving such
+    an object with a different -Connection is refused rather than mixing
+    credentials. Objects read back from serialized data, such as
+    Import-Clixml output, are data only; act on them by ID or path with
+    -Connection.
+
+  WORKSPACES
+    Connect-FilesAccount -WorkspaceId sets the workspace a connection's
+    commands run in. One command can run in another workspace, including
+    workspace 0, with -WorkspaceScope, or in none with -NoWorkspaceScope,
+    without changing the connection.
+
+    An object remembers the workspace it was read in as well as its
+    connection. A command given it as -InputObject acts on it in that
+    workspace, including workspace 0 or none, unless that command is given
+    -WorkspaceScope or -NoWorkspaceScope itself, which applies to that
+    command only:
+
+        $user = Get-FilesUser -Id 1 -WorkspaceScope 0
+        $user | Set-FilesUser -Name 'New name'    # runs in workspace 0
+
+    Commands not given the object still use the connection's workspace.
+
+  LISTS AND PAGING
+    List commands, such as Get-FilesUser without -Id, write every object,
+    loading one page at a time as the pipeline consumes them:
+
+        Get-FilesUser | Where-Object SiteAdmin | Export-Csv admins.csv
+
+    -First and -Skip bound what a list writes, and stopping the pipeline
+    early, as Select-Object -First does, loads no further page. A failure on
+    any page stops the list with an error, so a partial listing is never
+    taken for a complete one. -PerPage sets the API's page size.
+
+    To page yourself, -Page writes the first page as a FilesPage object,
+    and -Continuation writes the next:
+
+        $page = Get-FilesUser -Page
+        while ($page.HasMore) {
+            $page = Get-FilesUser -Continuation $page.Continuation
+        }
+
+    A continuation loads its page once, belongs to the command, query and
+    connection that produced it, and cannot be saved for a later session.
+    Another command, even one that lists the same kind of object, refuses
+    it and leaves it usable by its own command.
+
+  PARAMETER VALUES
+    Parameters take PowerShell values and send them exactly:
+
+    - Whole-number parameters refuse fractions and values too large for an
+      Int64 rather than rounding them.
+    - Boolean parameters take $true or $false; an omitted parameter is not
+      sent at all.
+    - Dates take a DateTime from Get-Date, a DateTimeOffset, or ISO 8601
+      text with an offset, such as 2026-01-31T14:00:00Z. A date that does
+      not say whether it is UTC or local time is refused.
+    - Object parameters, such as -Filter, take a hashtable or
+      PSCustomObject; keys keep their case and values their types.
+    - Parameters the API documents as lists, such as New-FilesUser
+      -GroupIds, take arrays.
+    - Passwords, private keys, tokens and other credentials take
+      SecureString, which keeps them out of transcripts, confirmation
+      messages and the formatting of the command's arguments. Get the value
+      from Read-Host -AsSecureString or a secret vault: text typed on the
+      command line, even inside ConvertTo-SecureString, is already in
+      command history.
+    - Decimal values keep every digit, and decimal properties of results,
+      such as an invoice's Amount, are exact decimals, or $null when
+      Files.com leaves them out.
+    - File parameters, such as Set-FilesUser -AvatarFile or Set-FilesSite
+      -LogoFile, take a FilesAttachment: a local file from Get-Item, or one
+      New-FilesAttachment makes from a file, bytes or a stream. The file
+      goes in the same request as the other parameters, whose values go
+      exactly as they would without it. A local file is opened, and a
+      stream read, only when the command goes ahead with the change: never
+      under -WhatIf, and not when a requested confirmation is declined; a
+      stream is borrowed and left open.
+
+    Remote paths are Files.com names and are used exactly as written.
+
+  PREVIEWING AND CONFIRMING CHANGES
+    Every command that changes something supports -WhatIf and -Confirm.
+    With -WhatIf the command checks its arguments and describes the change
+    without contacting Files.com. Commands that delete, and commands that
+    create or change users, groups, their members, permissions, API, SSH
+    and GPG keys, remote-server and other credentials, partners, lifecycle
+    rules or site security settings, confirm at high impact: they ask by
+    default. In scripts that have already decided, use -Confirm:$false.
+
+  ERRORS
+    Failures are error records whose IDs start with Files., such as
+    Files.NotFound, Files.PermissionDenied, Files.Authentication,
+    Files.Throttled, Files.Connection, Files.TransferCompletionUnknown,
+    Files.LimitExceeded, for an upload that did not fit a limit, or
+    Files.RegionMismatch. The exception is a FilesException with the
+    error's Kind, the ErrorType, HttpStatus, Title and Instance Files.com
+    reported, and the RequestId; for Files.LimitExceeded also UploadLimit,
+    the limit, and for Files.RegionMismatch RequestedOrigin and
+    RegionRelocationRefusal. The error's recommended action follows from
+    them. A failure a stream or file of yours raises goes on as it was
+    raised, whatever its type.
+
+    A failure that concerns only the current object, such as a user that
+    does not exist, is non-terminating: the command goes on with the next
+    object, and -ErrorAction Stop stops it instead. Failures of the
+    connection, credentials, arguments or a list stop the command.
+
+    A request that stalls longer than the connection's network timeouts is
+    retried like other temporary failures and then fails with
+    Files.NetworkTimeout; a command that runs longer than -OperationTimeout
+    fails with Files.OperationTimeout.
+
+    With -Verbose, ordinary engine messages omit credentials and URL
+    queries. With -DiagnosticDebug, the Debug stream may contain sensitive
+    information. Restrict access to DEBUG logs and review them before
+    sharing.
+
+  NETWORK SETTINGS AND DIAGNOSTICS
+    The Files.com engine retries a request that failed in a way that may be
+    temporary, such as a connection failure, a network timeout or a server
+    error, up to -MaxNetworkRetries times (3 by default), each retry
+    shown with -Verbose; -MaxNetworkRetries 0 turns them off. A retry of
+    a Files.com API request waits -RetryDelaySeconds at first and twice
+    as long each later time, up to -MaxRetryDelaySeconds; a server that
+    says when to retry is waited for instead, and -MaxRetryDelaySeconds
+    does not shorten that wait. Below those retries, a request that only
+    reads something, such as a download, can be sent again when its
+    connection closes before any answer. A request that changes
+    something, such as a delete or the one that completes an upload, is
+    sent once per try, and again only where Files.com redirects it. When
+    it fails after it may have reached Files.com, such as when the
+    connection drops before the answer, it is not sent again: the
+    error's RequestMayHaveBeenProcessed is $true, and you check whether
+    it took effect before running the command again.
+    -ConnectTimeoutSeconds, -ReadTimeoutSeconds and -WriteTimeoutSeconds
+    bound how long a connection or request may stall.
+
+    Requests go through the system's proxy settings unless the connection
+    was made with -Proxy, and -ProxyCredential when the proxy asks for one,
+    or with -HttpMessageHandler, a handler of your own that the connection
+    borrows and never disposes:
+
+        Connect-FilesAccount -ApiKey $apiKey -Proxy http://proxy.example.com:8080
+
+    With -Verbose, a command shows the engine's messages about its own
+    requests: each request and each retry, with URLs that keep their site
+    and path but lose credentials and queries. A connection made with
+    -DiagnosticDebug also shows, with -Debug, the engine's DEBUG messages
+    of its sign-in and of every command that uses it. DEBUG messages may
+    contain sensitive information: URLs, request and response bodies, and
+    values such as the password and one-time code a sign-in sends and the
+    session ID or partial-login identifier it receives. Neither what they
+    include nor any redaction is guaranteed. Restrict access to them and
+    review them before sharing. Other connections' commands and the
+    Verbose stream never show them.
+
+    -LogLevel sets the least severe engine message a connection's commands
+    produce: Debug, Information, Warning, Error or None. Without it the
+    engine produces all of them: the ordinary ones, redacted as above, reach
+    the Verbose stream with -Verbose, and the DEBUG ones are shown only for
+    a connection made with -DiagnosticDebug. Each request and retry is
+    Information, and a request that fails in the end is Warning or Error,
+    so -LogLevel Warning leaves only failures on the Verbose stream.
+    -DiagnosticDebug can be used only with -LogLevel Debug or without
+    -LogLevel.
+
+    Requests name the module and its version, then the engine and its
+    version, in their User-Agent, such as FilesCom-PowerShell/1.0.0
+    Files.com DOTNET SDK v2.0.0.
+
+    Closing a connection, with Disconnect-FilesAccount, by closing its
+    runspace or by removing the module, cancels the operations using it
+    and closes the network connections the engine made for it, once the
+    engine has finished with what those operations used. It does not wait
+    for each command: each ends on its own, usually with Files.Cancelled,
+    though one whose answer had already arrived can still succeed, and an
+    upload whose final request was sent may have completed. Streams the
+    commands borrowed stay open.
+
+  SECRETS IN RESULTS
+    Some fields that hold a credential, such as the key of a new API key,
+    are FilesSecret objects, which show as ******** where PowerShell
+    displays them. Treat objects holding such values as sensitive, and
+    avoid exporting or logging them. Call Reveal() or ToSecureString()
+    when you need the value:
+
+        $key = New-FilesApiKey -Name automation
+        $key.Key.ToSecureString() | Set-Secret -Name FilesAutomationKey
+
+  TRANSFERS
+    Send-FilesFile uploads files or stream contents. Parts go in parallel
+    when Files.com allows it, failed parts are retried on their own, and
+    Write-Progress shows the bytes Files.com has accepted. By default an
+    upload adapts how many parts it sends at once to the throughput,
+    failures and throttling it measures, within -MaxConcurrency when given;
+    -ConcurrencyMode Static keeps the number fixed, and -PerformanceProfile
+    chooses its tuning instead of the one for the destination: S3 where the
+    parts go straight to Amazon S3, Generic elsewhere. Uploads can share a
+    budget of requests and memory through New-FilesTransferLimiter.
+
+    Where its parts go straight to Amazon S3, an upload without
+    -PerformanceProfile or -AutomaticConcurrency takes the scaled S3
+    policy, which by default probes the link from 1 part at a time and
+    adds parts as answered parts show they help. -AggressiveStartup starts
+    it at the policy's 150 parts at once instead, within -MaxConcurrency,
+    skipping initial concurrency probes on a known high-throughput
+    network, such as a high-capacity cloud VM. The default start is not a
+    lower performance level: it can reach the same eventual throughput and
+    concurrency ceiling; only its ramp-up takes longer. Both keep
+    concurrency limits and adaptive backoff. Send-FilesDirectory
+    -AggressiveStartup starts all of a folder's files this way, once, as
+    they share one target.
+
+    Where an upload's parts go straight to Amazon S3 as an ordinary
+    multipart upload, which the engine recognizes from the part URLs
+    Files.com gives when the upload starts, the upload chooses the sizes of
+    its parts within the engine's own limits for S3: every part but the
+    last at least 5 MiB, none larger than 1 GiB, at most 10,000 parts or
+    the fewer Files.com makes available, and files of at most 5 TiB. It
+    chooses them from the file's size and grows them while that raises
+    throughput; -PartSize fixes them and -PartSizingMode ServerPlanned uses
+    Files.com's. Elsewhere Files.com plans them. With -PassThru the result
+    says where the sizes came from and why. The automatic sizes and
+    concurrency start from defaults not yet measured against Files.com's
+    production destinations.
+
+    For rollout and diagnostics, New-FilesAutomaticConcurrency and
+    New-FilesAutomaticPartSizing make expert tuning for Send-FilesFile's
+    -AutomaticConcurrency and -AutomaticPartSizing: how many parts an
+    upload starts with and may grow to, how it backs off after throttling,
+    and the sizes its parts start with and stay within. Concurrency tuning
+    starts from the profile it names and replaces the one chosen for the
+    destination; without it, uploads keep that choice. -MaxReadyParts
+    and -MaxReadyBytes bound the parts read ahead and waiting to be sent;
+    a part larger than the byte budget is still read once none is waiting.
+    Settings are checked when the tuning is made, with the rules the upload
+    uses, and none of them changes the parts Files.com asks for.
+
+    With -PassThru the result's Metrics say what the upload measured: its
+    throughput, waits, read-ahead pressure, decisions and the process's
+    CPU and memory use. -Diagnostics writes a record of every part request
+    and every concurrency and part size decision to the Information stream,
+    tagged FilesCom.UploadTrace, and a summary saying whether every record
+    was written; collect them with -InformationVariable. Records hold the
+    remote path, times, decisions and counts, never addresses, headers,
+    credentials or contents, and one upload writes at most -DiagnosticLimit
+    of them. They are written on the pipeline's thread and never slow or
+    fail the upload. Measurements against a local test server say nothing
+    about production throughput.
+
+    -InputStream without -Length uploads everything a stream gives until it
+    ends, such as a program's output, without asking its length. -MaxLength
+    declares the most it may give: a longer stream stops the upload without
+    completing it, with Files.LimitExceeded. Parts wait for Files.com in
+    memory, within the limiter's buffer space, or with -PartStorage
+    TemporaryFiles in private temporary files deleted once accepted.
+    Where the upload chooses part sizes, they are sized for -MaxLength and
+    sent several at once; elsewhere they go one at a time, as Files.com
+    plans each. -Spool instead copies the whole stream, up to
+    -MaxLength, to a private temporary file before sending anything. Until
+    the stream ends, Write-Progress shows the bytes read so far without a
+    percentage. Nothing is read, copied or sent unless the upload goes
+    ahead: not under -WhatIf, nor when a requested confirmation is
+    declined.
+
+    All the files of one input are checked before the first upload: a
+    -RemotePath names one file, and two files that would upload to what
+    Files.com treats as the same path are refused, so no upload silently
+    replaces another. Pipe files and give each its own remote path with a
+    script block to send several.
+
+    If an upload's final request fails after it may have reached Files.com,
+    the command stops with Files.TransferCompletionUnknown: check the remote
+    file before uploading again. Its size alone does not show which version
+    it holds; a checksum Files.com reports, such as Get-FilesFile's Sha256,
+    that equals the local file's does.
+
+    With -CheckpointPath, an upload records its progress in a local file,
+    and running the same command again with the same checkpoint, after a
+    failure, Ctrl+C or the process ending, continues it without sending
+    again the parts Files.com accepted; the result's ResumedParts and
+    ResumedBytes say how much. The checkpoint is removed once the upload
+    completes. A checkpoint that records another upload, or whose file
+    changed, is refused with Files.CheckpointRefused before anything is
+    sent, and its CheckpointProblem says why; -CheckpointRestart StartOver
+    uploads the file again from its first byte instead. Each upload needs a
+    checkpoint of its own, in a folder only you can change.
+
+    Send-FilesDirectory uploads every file under a local folder, several
+    at once within -MaxConcurrentFiles, to the remote folder of its name or
+    -RemotePath. Symbolic links and other entries that are not files or
+    folders are left out and listed in the result's Excluded. With
+    -CheckpointDirectory, a folder upload run again skips the files it
+    completed and continues the one it was in.
+
+    Receive-FilesDirectory downloads every file under a remote folder, the
+    site's root with -RemotePath '', or a folder piped to it, into a local
+    directory it creates if missing, several at once within
+    -MaxConcurrentFiles. Each file is put in place on its own, as
+    Receive-FilesFile puts a file in place: where nothing is at its name,
+    or with -Force replacing a regular file, never a folder or link. The
+    first failure stops the download with that file's error; files
+    completed before it stay, and nothing else in the directory is touched
+    or rolled back. With -CheckpointDirectory, running the command again,
+    also after Ctrl+C, skips each file it completed once its storage
+    confirms its version, lists it with CompletedEarlier, and continues the
+    file it was in from the parts it had. The local directory and the
+    checkpoint folder are created when the download starts.
+
+    Receive-FilesFile downloads to a local file or a stream. Where the
+    file's storage is an Amazon S3 general-purpose endpoint over HTTPS, the
+    engine binds the download to the version that storage answers its
+    first part with, and downloads the rest in ranged parts of -PartSize,
+    up to -MaxConcurrency at once, each for that version only; if the file
+    changes meanwhile, the command fails with Files.SourceChanged and no
+    local file is put in place; a stream given with -OutputStream keeps the
+    whole parts written before the failure, and stays open. The result's
+    VersionBound says whether it was bound, and an answer from the Files.com
+    web app instead of the file's contents is refused.
+
+    A local file is written by the engine into a stage, in a private
+    folder it makes beside the destination, named like
+    .files-download-0123..., and put in place under its name only once the
+    download completes, so a failure or Ctrl+C never leaves a partial file
+    there. Without -Force the file is put in place only where nothing is
+    at its name: a file, folder or link already there, or one that appears
+    during the download, is left as it is and the command fails with
+    Files.LocalFile, whose PublicationProblem is DestinationExists. With
+    -Force only a regular file is replaced; a folder or link is never
+    replaced or followed (DestinationNotRegularFile). A replaced file's
+    group, access control list and permissions go to the new file, which
+    is yours; when they cannot, nothing is replaced (AccessNotKept). The
+    stage stays open while it is written, so no other process can rename
+    or delete it, and the destination folder and the folders above it are
+    held so that they cannot be renamed during the download.
+
+    With -CheckpointPath, a version-bound download that fails, is stopped
+    or whose process ends keeps its stage, and running the same command
+    again continues it once the storage confirms the version is still the
+    file's, fetching only the parts not yet written; the result's
+    ResumedBytes says how many bytes earlier runs wrote. A version that is
+    gone starts over from the first byte. A finished file refused at its
+    name keeps its bytes with the checkpoint (the error's
+    DownloadRetained) for the next run, with -Force or once the name is
+    free, to put in place without fetching them again; a run that finds
+    the very file an earlier run put in place completes without fetching
+    it (CompletedEarlier). A checkpoint that cannot be continued is
+    refused with Files.CheckpointRefused unless -CheckpointRestart
+    StartOver says to download the file again. A stream cannot be
+    continued.
+
+    Out-FilesLocalFile writes text, such as a CSV report, to a file that
+    appears only once all input has arrived, from a stage the command
+    creates and owns in the same folder; a failure removes that stage and
+    nothing else, so a failed pipeline never leaves a partial file or
+    replaces the previous one. It replaces an existing file only with
+    -Force, after checking that it is a regular file. The replacement is
+    one step that never writes through a symbolic link or replaces a
+    folder, but the check and the replacement cannot be one step: another
+    process allowed to change the folder could put a different entry at
+    that name in between, which is then replaced, never followed. The new
+    file gives no one access the replaced file did not, apart from you as
+    its owner: it takes that file's group and access control list, and its
+    permissions when it is yours. When that cannot be done, nothing is
+    replaced.
+
+    The examples folder beside the module holds complete scripts: a user
+    and permission inventory export, project provisioning with a preview
+    that contacts no one, an unattended upload that reports uncertain
+    completions instead of uploading again, a program's output, such as a
+    database export, streamed within a declared size and published under
+    its final name only when the program succeeds, a site's logo, icons
+    and login background applied from a folder of images in one change, and
+    an upload's diagnostics exported to a report that can be shared with
+    support:
+
+        $module = Get-Module FilesCom.PowerShell
+        Get-ChildItem (Join-Path $module.ModuleBase examples)
+
+    Send-FilesFile, Copy-FilesFile and Move-FilesFile can also send to a
+    remote server, snapshot or child site with -RemoteServerId, -SnapshotId
+    or -ChildSiteId. Send-FilesFile uploads there as it uploads to a folder
+    of the site, with every setting, into Files.com's folder for that
+    destination, and its -RemotePath cannot leave that folder.
+
+  REMOTE FILES AS LOCAL ONES
+    Test-FilesPath tells whether Files.com has a file or folder at a path.
+    Get-FilesFileContent reads a whole file as UTF-8 text, or as bytes
+    with -AsByteStream. Set-FilesFileContent writes everything piped or
+    given to it as one whole file, replacing any file at that path, with
+    one upload after the last value: strings as UTF-8 text, each after the
+    first on a new line, or bytes as they were when given. Text and bytes
+    together, or a pipeline ended early by a terminating error or a stop,
+    send nothing; values that arrive despite a non-terminating error are
+    written. They suit small files, since the content is held in memory;
+    transfer large ones with Send-FilesFile and Receive-FilesFile.
+
+    Open-FilesFileReadStream and Open-FilesFileWriteStream open a remote
+    file as a forward-only System.IO.Stream, for a file read or produced a
+    piece at a time without holding it in memory or on disk: the engine
+    downloads or uploads it behind the stream, holding at most the parts
+    in progress and 1 MiB. A stream goes on after the command returns,
+    with its connection and workspace; its later failures are
+    FilesException errors, and closing the connection stops it, with
+    Files.ConnectionClosed. Dispose a stream when done, in a finally
+    block. Disposing a stream opened to read before its end stops the
+    download. Closing a stream opened to write completes the file with
+    what was written, even when the code writing it failed, unless its
+    Abandon method was called first, after which closing it reports no
+    error; an upload's failure otherwise comes from the write that finds
+    it or from closing the stream, and a final request that may have
+    reached Files.com is Files.TransferCompletionUnknown.
+    Under -WhatIf, Open-FilesFileWriteStream opens nothing. Ctrl+C does
+    not interrupt a read or write in progress: Receive-FilesFile and
+    Send-FilesFile transfer a whole file with Ctrl+C, resuming and
+    progress.
+
+    Copy-FilesFile and Move-FilesFile return once Files.com accepts the
+    request, and a folder deleted with its contents can take longer to go.
+    Wait-FilesFileAction waits for the copy or move piped to it and writes
+    the completed migration, or fails with Files.FileActionFailed, naming
+    the migration; -Removed waits until nothing is left at -Path. Stopping
+    the wait, or -Timeout, stops only the wait:
+
+        Copy-FilesFile -Path reports -Destination archive/reports |
+            Wait-FilesFileAction -Timeout (New-TimeSpan -Minutes 30)
+
+  CANCELLATION
+    Pressing Ctrl+C, or a pipeline stopping early, cancels the request in
+    progress. Commands wait until the operation has actually stopped before
+    returning.
+
+  REMOVING OR UPDATING THE MODULE
+    Remove-Module FilesCom.PowerShell closes the connections the current
+    runspace made, without contacting Files.com; owned sessions stay valid
+    until they expire. The module's assemblies stay loaded in the process,
+    so to use another version of FilesCom.PowerShell, start a new
+    PowerShell session.
+
+    Versions installed with Install-PSResource are kept side by side. In a
+    new session, choose one with:
+
+        Import-Module FilesCom.PowerShell -RequiredVersion <version>
+
+  LIMITATIONS OF THIS VERSION
+    Only an ordinary Amazon S3 route, recognized from the URLs Files.com
+    gives, gets downloads bound to a version and part sizes the upload
+    chooses; other storage, such as S3-compatible services and Files.com
+    Agent destinations, is downloaded whole and uploaded in the parts
+    Files.com plans. A download without -CheckpointPath or
+    -CheckpointDirectory, or one not bound to a version of the file, starts
+    again from its first byte when it fails. Response fields Files.com adds
+    after this module was built depend on features the Files.com .NET SDK
+    does not have yet.
+
+SEE ALSO
+    Connect-FilesAccount
+    Get-Help <command-name> -Full
+    https://developers.files.com

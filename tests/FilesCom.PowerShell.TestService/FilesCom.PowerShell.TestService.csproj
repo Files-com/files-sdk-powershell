@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    A stand-in for a Files.com site on a loopback port, or in memory through the HttpMessageHandler it makes, for the
+    module's Pester tests. It is the only mocked part of a test: the commands, engine and SDK under test are the packaged
+    module. It uses .NET base libraries only, so it loads into the test's PowerShell process without sharing any assembly
+    with the module: the net8.0 build into PowerShell 7, the net48 build into Windows PowerShell 5.1.
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net48</TargetFrameworks>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>12</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+</Project>

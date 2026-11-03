@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    The types commands write to the pipeline and pass to the engine. They use only .NET base library types, so the
+    engine's own dependencies (the FilesCom SDK, System.Text.Json, Polly and the rest) never appear in them and can load
+    in isolation from other modules.
+  -->
+  <PropertyGroup>
+    <!-- One build that both editions' commands and every engine build share. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>FilesCom.PowerShell.Contracts</AssemblyName>
+    <RootNamespace>FilesCom.PowerShell</RootNamespace>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,29 @@
+{
+  "comment": "The tools that build, check and test the module, pinned by version and SHA-256. Restore-Tools.ps1 installs exactly these into a private directory; nothing is installed for the user or machine.",
+  "powershell": {
+    "minimum": "7.4.20",
+    "versions": {
+      "7.4.20": {
+        "osx-arm64": "7f9a2503304ee239330f5c4ccc7eef11894b095d7ccb8f9fa78a16c6ee508edc",
+        "linux-x64": "ed8008345c7f5337f5e293145f5e243ce132e5ee4dfc24ac551c45a4b3092181",
+        "linux-arm64": "4d1a7b468eae627809eac5fae79c4e645cd9362fdf9f626298686b4489eb4724"
+      },
+      "7.5.11": {
+        "osx-arm64": "93c5d5b71a3937e3dbb68934886d318689f57ecda466443764a9d7101f196e6f",
+        "linux-x64": "82a8b13d92b0f3ae48e56cf2f3f7961679371736ca90145ca71617c2913ba9d8",
+        "linux-arm64": "830ebda118c731ece3fa7e6b7e8573a21346387cbbca5b2f5e3b9bfe24f96672"
+      },
+      "7.6.6": {
+        "osx-arm64": "6df833d094ebac1c1a74340d7b3437f4aaf5e03ce640484a1c4359f3ce8b3db1",
+        "linux-x64": "ddbc4a2d113bbd46d283cfedcbcd117a70caefd7673f41f2b4e0000badf103bc",
+        "linux-arm64": "924829e54c983648f6f1419a2dc7f9433c861b2fb5bd57736ff096c24f133729"
+      }
+    }
+  },
+  "modules": [
+    { "name": "Pester", "version": "6.2.0", "sha256": "e6ac7418d4f12500269aaca58ae56cf1caafbbf1afa2cec334e289d1cf50a239" },
+    { "name": "PSScriptAnalyzer", "version": "1.25.0", "sha256": "14e634c828eb98efb9f40b2918ba90f139ed5eccdf663a2a747736d996995d60" },
+    { "name": "Microsoft.PowerShell.PlatyPS", "version": "1.0.3", "sha256": "df43751aa3e03e6fcac3374949f6161d6a412a349e7c3362c33c3ce34d2eb562" },
+    { "name": "Microsoft.PowerShell.PSResourceGet", "version": "1.2.0", "sha256": "90e4c97b2f5ecf8c7d4730ca3b7028739e2b7665ded27249390483f73be71944" }
+  ]
+}

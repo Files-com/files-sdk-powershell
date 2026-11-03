@@ -1,0 +1,26 @@
+<Project>
+  <!-- Shared by the module's assemblies. The module version comes from the target's _VERSION file alone. -->
+  <PropertyGroup>
+    <FilesComModuleVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../_VERSION').Trim())</FilesComModuleVersion>
+    <Version>$(FilesComModuleVersion)</Version>
+    <AssemblyVersion>$(FilesComModuleVersion).0</AssemblyVersion>
+    <FileVersion>$(FilesComModuleVersion).0</FileVersion>
+    <!-- The exact FilesCom SDK package, from engine.json, which also records its SHA-256 for the build to verify. -->
+    <FilesComEngineVersion>$([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../engine.json')), '(?s).*"version":\s*"([^"]+)".*', '$1'))</FilesComEngineVersion>
+    <Company>Files.com</Company>
+    <Product>FilesCom PowerShell module</Product>
+    <Copyright>Copyright (c) Action Verb, LLC</Copyright>
+    <LangVersion>12</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildThisFileDirectory)=/_/src/</PathMap>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DebugType>embedded</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+</Project>

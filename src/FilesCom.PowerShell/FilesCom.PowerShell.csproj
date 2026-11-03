@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    The module's commands: one .NET Standard 2.0 assembly that is the module's root on Windows PowerShell 5.1 and on
+    PowerShell 7, so importing the module runs no script. It compiles against PowerShell Standard, the API both
+    editions share, whose System.Management.Automation the host provides at run time.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>FilesCom.PowerShell</AssemblyName>
+    <RootNamespace>FilesCom.PowerShell</RootNamespace>
+    <!--
+      The commands never load the engine's dependencies, which resolve in the engine's own load context. Following
+      the engine reference into them would only compare their versions with this assembly's framework and warn.
+    -->
+    <_FindDependencies>false</_FindDependencies>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../FilesCom.PowerShell.Contracts/FilesCom.PowerShell.Contracts.csproj" />
+    <!--
+      Compiled against the engine's .NET Standard build, never copied beside the commands: at run time the engine built
+      for the running .NET loads from its own folder under the same assembly identity.
+    -->
+    <ProjectReference Include="../FilesCom.PowerShell.Engine/FilesCom.PowerShell.Engine.csproj" Private="false" />
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>

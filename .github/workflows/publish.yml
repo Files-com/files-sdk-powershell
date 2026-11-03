@@ -1,0 +1,41 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore the FilesCom package
+        shell: pwsh
+        run: ./build/Restore-PublishedEngine.ps1 -FeedPath "$env:RUNNER_TEMP/engine-feed"
+
+      - name: Build
+        env:
+          FILESCOM_ENGINE_FEED: ${{ runner.temp }}/engine-feed
+          FILESCOM_TOOLS: ${{ runner.temp }}/tools
+        run: bash build.sh
+
+      - name: Log in to NuGet
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: Files.com
+
+      - name: Publish to NuGet
+        run: dotnet nuget push "out/packages/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json

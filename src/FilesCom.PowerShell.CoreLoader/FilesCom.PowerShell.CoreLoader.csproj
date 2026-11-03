@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Loads the engine into a load context of its own on PowerShell 7. The commands target .NET Standard 2.0, so that
+    one assembly is the module's root on both editions, and .NET Standard has no AssemblyLoadContext: on PowerShell 7
+    they load this assembly from the module's core folder and call EngineContext.Register.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>FilesCom.PowerShell.CoreLoader</AssemblyName>
+    <RootNamespace>FilesCom.PowerShell.CoreLoader</RootNamespace>
+  </PropertyGroup>
+</Project>

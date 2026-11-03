@@ -1,0 +1,16 @@
+{
+  "comment": "License and notice texts of shipped packages whose NuGet package does not carry them, taken from each package's official source at the released version. Build-Module adds them to ThirdPartyNotices.txt, and fails when a shipped package's version or a text's SHA-256 no longer matches this record.",
+  "packages": [
+    {
+      "id": "log4net",
+      "version": "3.5.0",
+      "source": "https://github.com/apache/logging-log4net",
+      "tag": "rel/3.5.0",
+      "commit": "f7794ae187ab2e228e1754cb478568dd305d1b32",
+      "files": {
+        "LICENSE": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+        "NOTICE": "c7a7b86d779d227344dfebf5b1423fff86a9edba76c3fcf37ada9b9ef2c0d72c"
+      }
+    }
+  ]
+}
