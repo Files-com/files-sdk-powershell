@@ -83,6 +83,7 @@
 /targets/mock-server/lint.sh
 /targets/mock-server/scenarios/api-scenarios-canonical.json
 /targets/mock-server/scenarios/folder-list.json
+/targets/mock-server/scenarios/users-find.json
 /targets/mock-server/setup.sh
 /targets/mock-server/test.sh
 /targets/mock-server/test/connection_faults_test.rb
