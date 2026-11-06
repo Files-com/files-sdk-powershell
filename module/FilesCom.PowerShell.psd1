@@ -2,7 +2,7 @@
     # One .NET Standard assembly is the module on both editions, so importing runs no script: it works where the
     # execution policy lets no script run. The assembly loads the engine built for the running .NET.
     RootModule = 'FilesCom.PowerShell.dll'
-    ModuleVersion = '1.1.3'
+    ModuleVersion = '1.1.4'
     GUID = '5d1b1c55-7e02-4f4b-9f6e-3c1a8d2b6f90'
     Author = 'Files.com'
     CompanyName = 'Files.com'

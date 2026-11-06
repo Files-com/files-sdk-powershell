@@ -34,7 +34,7 @@ namespace FilesCom.PowerShell.Commands
         public long? PerPage { get; set; }
 
         /// <summary>
-        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `workspace_id`, `company`, `name`, `disabled`, `authenticate_until`, `username`, `email`, `site_admin`, `last_desktop_login_at`, `last_login_at`, `password_validity_days` or `ssl_required`.
+        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `company`, `name`, `disabled`, `authenticate_until`, `email`, `username`, `workspace_id`, `last_desktop_login_at`, `last_login_at`, `site_admin`, `password_validity_days` or `ssl_required`.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
         [Parameter(ParameterSetName = "Page")]
