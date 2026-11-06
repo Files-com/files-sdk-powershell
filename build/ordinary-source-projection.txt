@@ -81,7 +81,9 @@
 /targets/mock-server/lib/simulation/users.rb
 /targets/mock-server/lib/simulation/zip_archive.rb
 /targets/mock-server/lint.sh
+/targets/mock-server/pre_commit.sh
 /targets/mock-server/scenarios/api-scenarios-canonical.json
+/targets/mock-server/scenarios/file-transfers.json
 /targets/mock-server/scenarios/folder-list.json
 /targets/mock-server/scenarios/users-find.json
 /targets/mock-server/setup.sh
