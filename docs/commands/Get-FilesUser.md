@@ -137,7 +137,7 @@ HelpMessage: ''
 
 ### -SortBy
 
-If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `company`, `name`, `disabled`, `authenticate_until`, `email`, `username`, `workspace_id`, `last_desktop_login_at`, `last_login_at`, `site_admin`, `password_validity_days` or `ssl_required`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `company`, `name`, `disabled`, `authenticate_until`, `email`, `username`, `workspace_id`, `last_desktop_login_at`, `last_login_at`, `site_admin`, `password_validity_days`, `ssl_required` or `ftp_tls_session_reuse_required`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary
@@ -164,7 +164,7 @@ HelpMessage: ''
 
 ### -Filter
 
-If set, return records where the specified field is equal to the supplied value. Valid fields are `username`, `name`, `email`, `company`, `site_admin`, `password_validity_days`, `ssl_required`, `last_login_at`, `authenticate_until`, `not_site_admin`, `disabled`, `partner_id`, `primary_group_id` or `workspace_id`. Valid field combinations are `[ site_admin, username ]`, `[ not_site_admin, username ]`, `[ workspace_id, username ]`, `[ company, name ]`, `[ workspace_id, name ]`, `[ workspace_id, email ]`, `[ workspace_id, company ]`, `[ workspace_id, site_admin ]`, `[ workspace_id, not_site_admin ]`, `[ workspace_id, disabled ]`, `[ workspace_id, partner_id ]`, `[ workspace_id, site_admin, username ]`, `[ workspace_id, not_site_admin, username ]`, `[ workspace_id, disabled, username ]`, `[ workspace_id, partner_id, username ]` or `[ workspace_id, company, name ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, return records where the specified field is equal to the supplied value. Valid fields are `username`, `name`, `email`, `company`, `site_admin`, `password_validity_days`, `ssl_required`, `ftp_tls_session_reuse_required`, `last_login_at`, `authenticate_until`, `not_site_admin`, `disabled`, `partner_id`, `primary_group_id` or `workspace_id`. Valid field combinations are `[ site_admin, username ]`, `[ not_site_admin, username ]`, `[ workspace_id, username ]`, `[ company, name ]`, `[ workspace_id, name ]`, `[ workspace_id, email ]`, `[ workspace_id, company ]`, `[ workspace_id, site_admin ]`, `[ workspace_id, not_site_admin ]`, `[ workspace_id, disabled ]`, `[ workspace_id, partner_id ]`, `[ workspace_id, site_admin, username ]`, `[ workspace_id, not_site_admin, username ]`, `[ workspace_id, disabled, username ]`, `[ workspace_id, partner_id, username ]` or `[ workspace_id, company, name ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary
