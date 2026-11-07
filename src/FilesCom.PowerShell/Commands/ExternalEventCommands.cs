@@ -34,7 +34,7 @@ namespace FilesCom.PowerShell.Commands
         public long? PerPage { get; set; }
 
         /// <summary>
-        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `status`, `event_type` or `workspace_id`.
+        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `status` or `event_type`.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
         [Parameter(ParameterSetName = "Page")]
@@ -43,7 +43,7 @@ namespace FilesCom.PowerShell.Commands
         public System.Collections.IDictionary SortBy { get; set; }
 
         /// <summary>
-        /// If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `status` or `workspace_id`. Valid field combinations are `[ status, created_at ]`.
+        /// If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `status` or `workspace_id`. Valid field combinations are `[ status, created_at ]`, `[ workspace_id, created_at ]`, `[ workspace_id, status ]` or `[ workspace_id, status, created_at ]`.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
         [Parameter(ParameterSetName = "Page")]

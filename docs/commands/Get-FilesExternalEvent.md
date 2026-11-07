@@ -137,7 +137,7 @@ HelpMessage: ''
 
 ### -SortBy
 
-If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `status`, `event_type` or `workspace_id`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `status` or `event_type`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary
@@ -164,7 +164,7 @@ HelpMessage: ''
 
 ### -Filter
 
-If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `status` or `workspace_id`. Valid field combinations are `[ status, created_at ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `status` or `workspace_id`. Valid field combinations are `[ status, created_at ]`, `[ workspace_id, created_at ]`, `[ workspace_id, status ]` or `[ workspace_id, status, created_at ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary

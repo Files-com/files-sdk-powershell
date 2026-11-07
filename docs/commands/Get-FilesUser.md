@@ -137,7 +137,7 @@ HelpMessage: ''
 
 ### -SortBy
 
-If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `company`, `name`, `disabled`, `authenticate_until`, `email`, `username`, `workspace_id`, `last_desktop_login_at`, `last_login_at`, `site_admin`, `password_validity_days`, `ssl_required` or `ftp_tls_session_reuse_required`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `site_id`, `company`, `name`, `email`, `username`, `workspace_id`, `last_desktop_login_at`, `authenticate_until`, `last_login_at`, `site_admin`, `disabled`, `password_validity_days`, `ssl_required` or `ftp_tls_session_reuse_required`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary
