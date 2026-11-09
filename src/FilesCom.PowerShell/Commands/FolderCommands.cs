@@ -16,6 +16,15 @@ namespace FilesCom.PowerShell.Commands
     public sealed class GetFilesChildItemCommand : FilesListCmdlet<Models.RemoteFile>
     {
         /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "List")]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Page")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
         /// Send cursor to resume an existing list from the point at which you left off.  Get a cursor from an existing list via the X-Files-Cursor-Next header or the X-Files-Cursor-Prev header.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
@@ -31,15 +40,6 @@ namespace FilesCom.PowerShell.Commands
         [FilesInteger]
         [ValidateNotNull]
         public long? PerPage { get; set; }
-
-        /// <summary>
-        /// Path to operate on.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "List")]
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Page")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
 
         /// <summary>
         /// Request a preview size.  Can be `small` (default), `large`, `xlarge`, or `pdf`.

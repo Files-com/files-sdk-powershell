@@ -105,55 +105,6 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Allocate dedicated IP addresses to this Custom Domain.
-    /// </summary>
-    [Cmdlet("New", "FilesCustomDomainIpAllocation", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.CustomDomain))]
-    public sealed class NewFilesCustomDomainIpAllocationCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Custom Domain ID.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0)]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long Id { get; set; }
-
-        /// <summary>
-        /// Number of dedicated IP addresses to allocate.
-        /// </summary>
-        [Parameter(Mandatory = true)]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long Count { get; set; }
-
-        /// <summary>Allocate dedicated IP addresses to this Custom Domain.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection();
-            long id = Id;
-            ErrorTarget = id;
-            Dictionary<string, object> parameters = CreateAllocateIpParameters();
-            if (!ShouldProcessOn(connection, $"Custom domain {id}"))
-            {
-                return;
-            }
-            Models.CustomDomain result = Run(connection, token => CustomDomainBridge.CreateAllocateIpAsync(connection, id, parameters, CallOptions, token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> CreateAllocateIpParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Count)))
-            {
-                parameters["count"] = Count;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
     /// Create Custom Domain.
     /// </summary>
     [Cmdlet("New", "FilesCustomDomain", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
@@ -245,6 +196,55 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(Domain)))
             {
                 parameters["domain"] = Domain;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Allocate dedicated IP addresses to this Custom Domain.
+    /// </summary>
+    [Cmdlet("New", "FilesCustomDomainIpAllocation", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.CustomDomain))]
+    public sealed class NewFilesCustomDomainIpAllocationCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Custom Domain ID.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0)]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Number of dedicated IP addresses to allocate.
+        /// </summary>
+        [Parameter(Mandatory = true)]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long Count { get; set; }
+
+        /// <summary>Allocate dedicated IP addresses to this Custom Domain.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection();
+            long id = Id;
+            ErrorTarget = id;
+            Dictionary<string, object> parameters = CreateAllocateIpParameters();
+            if (!ShouldProcessOn(connection, $"Custom domain {id}"))
+            {
+                return;
+            }
+            Models.CustomDomain result = Run(connection, token => CustomDomainBridge.CreateAllocateIpAsync(connection, id, parameters, CallOptions, token));
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> CreateAllocateIpParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Count)))
+            {
+                parameters["count"] = Count;
             }
             return parameters;
         }

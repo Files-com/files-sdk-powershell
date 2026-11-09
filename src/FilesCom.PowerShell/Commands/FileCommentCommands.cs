@@ -16,6 +16,15 @@ namespace FilesCom.PowerShell.Commands
     public sealed class GetFilesFileCommentForPathCommand : FilesListCmdlet<Models.FileComment>
     {
         /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "List")]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Page")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
         /// Used for pagination.  When a list request has more records available, cursors are provided in the response headers `X-Files-Cursor-Next` and `X-Files-Cursor-Prev`.  Send one of those cursor value here to resume an existing list from the next available record.  Note: many of our SDKs have iterator methods that will automatically handle cursor-based pagination.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
@@ -31,15 +40,6 @@ namespace FilesCom.PowerShell.Commands
         [FilesInteger]
         [ValidateNotNull]
         public long? PerPage { get; set; }
-
-        /// <summary>
-        /// Path to operate on.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "List")]
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Page")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
 
         /// <summary>List File Comments by Path.</summary>
         protected override void Execute()

@@ -71,14 +71,14 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.Syncs.CreateAsync(parameters, requestOptions, token), source => SyncBridge.Project(source, connection, options));
         }
 
-        internal static Task DryRunAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
-        {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.Sync model ? model.DryRunAsync(parameters, token) : client.Syncs.DryRunAsync(id, parameters, requestOptions, token));
-        }
-
         internal static Task ManualRunAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.Sync model ? model.ManualRunAsync(parameters, token) : client.Syncs.ManualRunAsync(id, parameters, requestOptions, token));
+        }
+
+        internal static Task DryRunAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        {
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.Sync model ? model.DryRunAsync(parameters, token) : client.Syncs.DryRunAsync(id, parameters, requestOptions, token));
         }
 
         internal static Task<Models.Sync> UpdateAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)

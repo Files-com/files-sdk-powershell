@@ -1022,10 +1022,10 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Unlock user who has been locked out due to failed logins.
+    /// Trigger 2FA Reset process for user who has lost access to their existing 2FA methods.
     /// </summary>
-    [Cmdlet("Unlock", "FilesUser", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public sealed class UnlockFilesUserCommand : FilesApiCmdlet
+    [Cmdlet("Reset", "FilesUserTwoFactorAuthentication", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    public sealed class ResetFilesUserTwoFactorAuthenticationCommand : FilesApiCmdlet
     {
         /// <summary>
         /// User ID.
@@ -1043,21 +1043,21 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.User InputObject { get; set; }
 
-        /// <summary>Unlock user who has been locked out due to failed logins.</summary>
+        /// <summary>Trigger 2FA Reset process for user who has lost access to their existing 2FA methods.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
             ErrorTarget = id;
-            Dictionary<string, object> parameters = UnlockParameters();
+            Dictionary<string, object> parameters = User2faResetParameters();
             if (!ShouldProcessOn(connection, $"User {id}"))
             {
                 return;
             }
-            Run(connection, token => UserBridge.UnlockAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Run(connection, token => UserBridge.User2faResetAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
         }
 
-        private Dictionary<string, object> UnlockParameters()
+        private Dictionary<string, object> User2faResetParameters()
         {
             var parameters = new Dictionary<string, object>();
             return parameters;
@@ -1108,10 +1108,10 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Trigger 2FA Reset process for user who has lost access to their existing 2FA methods.
+    /// Unlock user who has been locked out due to failed logins.
     /// </summary>
-    [Cmdlet("Reset", "FilesUserTwoFactorAuthentication", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
-    public sealed class ResetFilesUserTwoFactorAuthenticationCommand : FilesApiCmdlet
+    [Cmdlet("Unlock", "FilesUser", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    public sealed class UnlockFilesUserCommand : FilesApiCmdlet
     {
         /// <summary>
         /// User ID.
@@ -1129,21 +1129,21 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.User InputObject { get; set; }
 
-        /// <summary>Trigger 2FA Reset process for user who has lost access to their existing 2FA methods.</summary>
+        /// <summary>Unlock user who has been locked out due to failed logins.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
             ErrorTarget = id;
-            Dictionary<string, object> parameters = User2faResetParameters();
+            Dictionary<string, object> parameters = UnlockParameters();
             if (!ShouldProcessOn(connection, $"User {id}"))
             {
                 return;
             }
-            Run(connection, token => UserBridge.User2faResetAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Run(connection, token => UserBridge.UnlockAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
         }
 
-        private Dictionary<string, object> User2faResetParameters()
+        private Dictionary<string, object> UnlockParameters()
         {
             var parameters = new Dictionary<string, object>();
             return parameters;

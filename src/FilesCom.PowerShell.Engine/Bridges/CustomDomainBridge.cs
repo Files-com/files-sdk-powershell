@@ -46,14 +46,14 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.CustomDomains.FindAsync(id, parameters, requestOptions, token), source => CustomDomainBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.CustomDomain> CreateAllocateIpAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
-        {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.CustomDomains.CreateAllocateIpAsync(id, parameters, requestOptions, token), source => CustomDomainBridge.Project(source, connection, options));
-        }
-
         internal static Task<Models.CustomDomain> CreateAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
         {
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.CustomDomains.CreateAsync(parameters, requestOptions, token), source => CustomDomainBridge.Project(source, connection, options));
+        }
+
+        internal static Task<Models.CustomDomain> CreateAllocateIpAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
+        {
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.CustomDomains.CreateAllocateIpAsync(id, parameters, requestOptions, token), source => CustomDomainBridge.Project(source, connection, options));
         }
 
         internal static Task<Models.CustomDomain> UpdateAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)

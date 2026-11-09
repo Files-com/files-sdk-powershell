@@ -404,49 +404,6 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Dry Run Sync.
-    /// </summary>
-    [Cmdlet("Test", "FilesSync", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    public sealed class TestFilesSyncCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Sync ID.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Id")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long Id { get; set; }
-
-        /// <summary>
-        /// The sync to act on, such as one written by another FilesCom command. The command uses its
-        /// Id and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public Models.Sync InputObject { get; set; }
-
-        /// <summary>Dry Run Sync.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
-            ErrorTarget = id;
-            Dictionary<string, object> parameters = DryRunParameters();
-            if (!ShouldProcessOn(connection, $"Sync {id}"))
-            {
-                return;
-            }
-            Run(connection, token => SyncBridge.DryRunAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-        }
-
-        private Dictionary<string, object> DryRunParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            return parameters;
-        }
-    }
-
-    /// <summary>
     /// Manually Run Sync.
     /// </summary>
     [Cmdlet("Start", "FilesSync", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
@@ -483,6 +440,49 @@ namespace FilesCom.PowerShell.Commands
         }
 
         private Dictionary<string, object> ManualRunParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Dry Run Sync.
+    /// </summary>
+    [Cmdlet("Test", "FilesSync", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    public sealed class TestFilesSyncCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Sync ID.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Id")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// The sync to act on, such as one written by another FilesCom command. The command uses its
+        /// Id and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.Sync InputObject { get; set; }
+
+        /// <summary>Dry Run Sync.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
+            ErrorTarget = id;
+            Dictionary<string, object> parameters = DryRunParameters();
+            if (!ShouldProcessOn(connection, $"Sync {id}"))
+            {
+                return;
+            }
+            Run(connection, token => SyncBridge.DryRunAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+        }
+
+        private Dictionary<string, object> DryRunParameters()
         {
             var parameters = new Dictionary<string, object>();
             return parameters;

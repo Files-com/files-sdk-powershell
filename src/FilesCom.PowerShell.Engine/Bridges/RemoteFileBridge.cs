@@ -79,39 +79,39 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.DeleteAsync(parameters, token) : client.RemoteFiles.DeleteAsync(path, parameters, requestOptions, token));
         }
 
-        internal static Task<Models.RemoteFile> FindAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
-        {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.RemoteFiles.FindAsync(path, parameters, requestOptions, token), source => RemoteFileBridge.Project(source, connection, options));
-        }
-
         internal static Task<Models.ZipListEntry[]> ZipListContentsAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.ZipListContentsAsync(parameters, token) : client.RemoteFiles.ZipListContentsAsync(path, parameters, requestOptions, token), source => Values.Array(source, item => ZipListEntryBridge.Project(item, connection, options)));
         }
 
-        internal static Task<Models.FileAction> BeginDeleteAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.RemoteFile> FindAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.BeginDeleteAsync(parameters, token) : client.RemoteFiles.BeginDeleteAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.RemoteFiles.FindAsync(path, parameters, requestOptions, token), source => RemoteFileBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> CopyAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> ZipAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyAsync(parameters, token) : client.RemoteFiles.CopyAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.RemoteFiles.ZipAsync(parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> CopyToRemoteServerAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> UnzipAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToRemoteServerAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToRemoteServerAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.UnzipAsync(parameters, token) : client.RemoteFiles.UnzipAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> CopyToSnapshotAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> GpgEncryptAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToSnapshotAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToSnapshotAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.GpgEncryptAsync(parameters, token) : client.RemoteFiles.GpgEncryptAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> CopyToChildSiteAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> GpgDecryptAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToChildSiteAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToChildSiteAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.GpgDecryptAsync(parameters, token) : client.RemoteFiles.GpgDecryptAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+        }
+
+        internal static Task<Models.FileAction> TransformAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        {
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.TransformAsync(parameters, token) : client.RemoteFiles.TransformAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
         internal static Task<Models.FileAction> MoveAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
@@ -134,29 +134,29 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.MoveToChildSiteAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.MoveToChildSiteAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> TransformAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> CopyAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.TransformAsync(parameters, token) : client.RemoteFiles.TransformAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyAsync(parameters, token) : client.RemoteFiles.CopyAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> GpgDecryptAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> CopyToRemoteServerAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.GpgDecryptAsync(parameters, token) : client.RemoteFiles.GpgDecryptAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToRemoteServerAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToRemoteServerAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> GpgEncryptAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> CopyToSnapshotAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.GpgEncryptAsync(parameters, token) : client.RemoteFiles.GpgEncryptAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToSnapshotAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToSnapshotAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> UnzipAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> CopyToChildSiteAsync(FilesConnection connection, string path, long destinationId, string destinationPath, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.UnzipAsync(parameters, token) : client.RemoteFiles.UnzipAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.CopyToChildSiteAsync(destinationId, destinationPath, parameters, token) : client.RemoteFiles.CopyToChildSiteAsync(path, destinationId, destinationPath, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.FileAction> ZipAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
+        internal static Task<Models.FileAction> BeginDeleteAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.RemoteFiles.ZipAsync(parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.RemoteFile model ? model.BeginDeleteAsync(parameters, token) : client.RemoteFiles.BeginDeleteAsync(path, parameters, requestOptions, token), source => FileActionBridge.Project(source, connection, options));
         }
 
         internal static Task<Models.FileUploadPart[]> BeginUploadAsync(FilesConnection connection, string path, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)

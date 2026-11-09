@@ -164,43 +164,6 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Reject partner site request.
-    /// </summary>
-    [Cmdlet("Deny", "FilesPartnerSiteRequest", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    public sealed class DenyFilesPartnerSiteRequestCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Pairing key for the partner site request
-        /// </summary>
-        [Parameter(Mandatory = true)]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string PairingKey { get; set; }
-
-        /// <summary>Reject partner site request.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection();
-            Dictionary<string, object> parameters = RejectParameters();
-            if (!ShouldProcessOn(connection, "Partner site request"))
-            {
-                return;
-            }
-            Run(connection, token => PartnerSiteRequestBridge.RejectAsync(connection, parameters, CallOptions, token));
-        }
-
-        private Dictionary<string, object> RejectParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(PairingKey)))
-            {
-                parameters["pairing_key"] = PairingKey;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
     /// Approve partner site request.
     /// </summary>
     [Cmdlet("Approve", "FilesPartnerSiteRequest", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
@@ -244,6 +207,43 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(PartnerId)))
             {
                 parameters["partner_id"] = PartnerId.Value;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Reject partner site request.
+    /// </summary>
+    [Cmdlet("Deny", "FilesPartnerSiteRequest", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    public sealed class DenyFilesPartnerSiteRequestCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Pairing key for the partner site request
+        /// </summary>
+        [Parameter(Mandatory = true)]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string PairingKey { get; set; }
+
+        /// <summary>Reject partner site request.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection();
+            Dictionary<string, object> parameters = RejectParameters();
+            if (!ShouldProcessOn(connection, "Partner site request"))
+            {
+                return;
+            }
+            Run(connection, token => PartnerSiteRequestBridge.RejectAsync(connection, parameters, CallOptions, token));
+        }
+
+        private Dictionary<string, object> RejectParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(PairingKey)))
+            {
+                parameters["pairing_key"] = PairingKey;
             }
             return parameters;
         }

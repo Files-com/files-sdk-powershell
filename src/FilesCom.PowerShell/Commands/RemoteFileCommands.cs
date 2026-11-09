@@ -489,6 +489,49 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
+    /// List the contents of a ZIP file.
+    /// </summary>
+    [Cmdlet("Get", "FilesArchiveEntry", DefaultParameterSetName = "Path")]
+    [OutputType(typeof(Models.ZipListEntry), ParameterSetName = new[] { "Path", "InputObject" })]
+    public sealed class GetFilesArchiveEntryCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
+        /// The file to act on, such as one written by another FilesCom command. The command uses its
+        /// Path and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.RemoteFile InputObject { get; set; }
+
+        /// <summary>List the contents of a ZIP file.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
+            ErrorTarget = path;
+            Dictionary<string, object> parameters = ZipListContentsParameters();
+            foreach (Models.ZipListEntry item in Run(connection, token => RemoteFileBridge.ZipListContentsAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)))
+            {
+                WriteObject(item);
+            }
+        }
+
+        private Dictionary<string, object> ZipListContentsParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            return parameters;
+        }
+    }
+
+    /// <summary>
     /// Find File/Folder by Path.
     /// </summary>
     [Cmdlet("Get", "FilesFile")]
@@ -555,54 +598,165 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// List the contents of a ZIP file.
+    /// Create a ZIP from one or more paths and save it to a destination path.
     /// </summary>
-    [Cmdlet("Get", "FilesArchiveEntry", DefaultParameterSetName = "Path")]
-    [OutputType(typeof(Models.ZipListEntry), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class GetFilesArchiveEntryCommand : FilesApiCmdlet
+    [Cmdlet("Compress", "FilesArchive", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.FileAction))]
+    public sealed class CompressFilesArchiveCommand : FilesApiCmdlet
     {
         /// <summary>
-        /// Path to operate on.
+        /// Paths to include in the ZIP.
         /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
-        [AllowEmptyString]
+        [Parameter(Mandatory = true)]
         [ValidateNotNull]
-        public string Path { get; set; }
+        public string[] Paths { get; set; }
 
         /// <summary>
-        /// The file to act on, such as one written by another FilesCom command. The command uses its
-        /// Path and the connection that fetched it.
+        /// Destination file path for the ZIP.
         /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [Parameter(Mandatory = true)]
+        [AllowEmptyString]
         [ValidateNotNull]
-        public Models.RemoteFile InputObject { get; set; }
+        public string Destination { get; set; }
 
-        /// <summary>List the contents of a ZIP file.</summary>
+        /// <summary>
+        /// Archive format to create.
+        /// </summary>
+        [Parameter()]
+        [ValidateNotNull]
+        public string ArchiveFormat { get; set; }
+
+        /// <summary>
+        /// Overwrite existing file in the destination?
+        /// </summary>
+        [Parameter()]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
+
+        /// <summary>Create a ZIP from one or more paths and save it to a destination path.</summary>
         protected override void Execute()
         {
-            FilesConnection connection = ResolveConnection(InputObject);
-            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
-            ErrorTarget = path;
-            Dictionary<string, object> parameters = ZipListContentsParameters();
-            foreach (Models.ZipListEntry item in Run(connection, token => RemoteFileBridge.ZipListContentsAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)))
+            FilesConnection connection = ResolveConnection();
+            Dictionary<string, object> parameters = ZipParameters();
+            if (!ShouldProcessOn(connection, "File"))
             {
-                WriteObject(item);
+                return;
             }
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.ZipAsync(connection, parameters, CallOptions, token));
+            WriteObject(result);
         }
 
-        private Dictionary<string, object> ZipListContentsParameters()
+        private Dictionary<string, object> ZipParameters()
         {
             var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Paths)))
+            {
+                parameters["paths"] = RequestValues.Strings(Paths, "Paths");
+            }
+            if (IsBound(nameof(Destination)))
+            {
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(ArchiveFormat)))
+            {
+                parameters["archive_format"] = ArchiveFormat;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
+            }
             return parameters;
         }
     }
 
     /// <summary>
-    /// Delete File/Folder and return its File Action.  A pending or processing deletion continues in the background after this returns; check its File Migration for completion.  Waiting for the File Migration does not cancel the deletion.
+    /// Extract a ZIP file to a destination folder.
     /// </summary>
-    [Cmdlet("Start", "FilesFileDeletion", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
+    [Cmdlet("Expand", "FilesArchive", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
     [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class StartFilesFileDeletionCommand : FilesApiCmdlet
+    public sealed class ExpandFilesArchiveCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// ZIP file path to extract.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Destination folder path for extracted files.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Destination { get; set; }
+
+        /// <summary>
+        /// Optional single entry filename to extract.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public string Filename { get; set; }
+
+        /// <summary>
+        /// Overwrite existing files in the destination?
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
+
+        /// <summary>
+        /// The file to act on, such as one written by another FilesCom command. The command uses its
+        /// Path and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.RemoteFile InputObject { get; set; }
+
+        /// <summary>Extract a ZIP file to a destination folder.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
+            ErrorTarget = path;
+            Dictionary<string, object> parameters = UnzipParameters();
+            if (!ShouldProcessOn(connection, $"File '{path}'"))
+            {
+                return;
+            }
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.UnzipAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> UnzipParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Destination)))
+            {
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(Filename)))
+            {
+                parameters["filename"] = Filename;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Encrypt a file with GPG and save it to a destination path.
+    /// </summary>
+    [Cmdlet("Protect", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
+    public sealed class ProtectFilesFileCommand : FilesApiCmdlet
     {
         /// <summary>
         /// Path to operate on.
@@ -613,12 +767,56 @@ namespace FilesCom.PowerShell.Commands
         public string Path { get; set; }
 
         /// <summary>
-        /// If true, will recursively delete folders.  Otherwise, will error on non-empty folders.
+        /// Destination file path for the encrypted file.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Destination { get; set; }
+
+        /// <summary>
+        /// GPG Key IDs to encrypt with.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] GpgKeyIds { get; set; }
+
+        /// <summary>
+        /// Partner ID whose GPG keys should be used for encryption.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? GpgKeyPartnerId { get; set; }
+
+        /// <summary>
+        /// Optional GPG Key ID to sign with.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? SigningKeyId { get; set; }
+
+        /// <summary>
+        /// Output ASCII-armored encrypted data.
         /// </summary>
         [Parameter(ParameterSetName = "Path")]
         [Parameter(ParameterSetName = "InputObject")]
         [ValidateNotNull]
-        public bool? Recursive { get; set; }
+        public bool? Armor { get; set; }
+
+        /// <summary>
+        /// Overwrite existing file in the destination?
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
 
         /// <summary>
         /// The file to act on, such as one written by another FilesCom command. The command uses its
@@ -628,27 +826,449 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.RemoteFile InputObject { get; set; }
 
-        /// <summary>Delete File/Folder and return its File Action.  A pending or processing deletion continues in the background after this returns; check its File Migration for completion.  Waiting for the File Migration does not cancel the deletion.</summary>
+        /// <summary>Encrypt a file with GPG and save it to a destination path.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
             ErrorTarget = path;
-            Dictionary<string, object> parameters = BeginDeleteParameters();
+            Dictionary<string, object> parameters = GpgEncryptParameters();
             if (!ShouldProcessOn(connection, $"File '{path}'"))
             {
                 return;
             }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.BeginDeleteAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.GpgEncryptAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
             WriteObject(result);
         }
 
-        private Dictionary<string, object> BeginDeleteParameters()
+        private Dictionary<string, object> GpgEncryptParameters()
         {
             var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Recursive)))
+            if (IsBound(nameof(Destination)))
             {
-                parameters["recursive"] = Recursive.Value;
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(GpgKeyIds)))
+            {
+                parameters["gpg_key_ids"] = RequestValues.Int64s(GpgKeyIds);
+            }
+            if (IsBound(nameof(GpgKeyPartnerId)))
+            {
+                parameters["gpg_key_partner_id"] = GpgKeyPartnerId.Value;
+            }
+            if (IsBound(nameof(SigningKeyId)))
+            {
+                parameters["signing_key_id"] = SigningKeyId.Value;
+            }
+            if (IsBound(nameof(Armor)))
+            {
+                parameters["armor"] = Armor.Value;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Decrypt a GPG-encrypted file and save it to a destination path.
+    /// </summary>
+    [Cmdlet("Unprotect", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
+    public sealed class UnprotectFilesFileCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Destination file path for the decrypted file.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Destination { get; set; }
+
+        /// <summary>
+        /// GPG Key IDs to decrypt with. If omitted, every accessible private GPG key in the source workspace is used.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] GpgKeyIds { get; set; }
+
+        /// <summary>
+        /// Partner ID whose GPG keys should be used for decryption.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? GpgKeyPartnerId { get; set; }
+
+        /// <summary>
+        /// Use every accessible private GPG key in the source workspace for decryption.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? UseAllPrivateKeys { get; set; }
+
+        /// <summary>
+        /// Ignore errors from the MDC (modification detection code) check.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? IgnoreMdcError { get; set; }
+
+        /// <summary>
+        /// Overwrite existing file in the destination?
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
+
+        /// <summary>
+        /// The file to act on, such as one written by another FilesCom command. The command uses its
+        /// Path and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.RemoteFile InputObject { get; set; }
+
+        /// <summary>Decrypt a GPG-encrypted file and save it to a destination path.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
+            ErrorTarget = path;
+            Dictionary<string, object> parameters = GpgDecryptParameters();
+            if (!ShouldProcessOn(connection, $"File '{path}'"))
+            {
+                return;
+            }
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.GpgDecryptAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> GpgDecryptParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Destination)))
+            {
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(GpgKeyIds)))
+            {
+                parameters["gpg_key_ids"] = RequestValues.Int64s(GpgKeyIds);
+            }
+            if (IsBound(nameof(GpgKeyPartnerId)))
+            {
+                parameters["gpg_key_partner_id"] = GpgKeyPartnerId.Value;
+            }
+            if (IsBound(nameof(UseAllPrivateKeys)))
+            {
+                parameters["use_all_private_keys"] = UseAllPrivateKeys.Value;
+            }
+            if (IsBound(nameof(IgnoreMdcError)))
+            {
+                parameters["ignore_mdc_error"] = IgnoreMdcError.Value;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Transform a file and save the output to a destination path.
+    /// </summary>
+    [Cmdlet("Convert", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
+    public sealed class ConvertFilesFileCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Destination file path for the transformed output.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Destination { get; set; }
+
+        /// <summary>
+        /// Transform type. Supported values are `image_convert`, `document_convert`, and `files_transform_script_execute`.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string TransformType { get; set; }
+
+        /// <summary>
+        /// Destination format to create.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string TargetFormat { get; set; }
+
+        /// <summary>
+        /// Files TransformScript source. Required when transform_type is `files_transform_script_execute`.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public string Script { get; set; }
+
+        /// <summary>
+        /// Maximum output width for image_convert.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? Width { get; set; }
+
+        /// <summary>
+        /// Maximum output height for image_convert.
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? Height { get; set; }
+
+        /// <summary>
+        /// Overwrite existing file in the destination?
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
+
+        /// <summary>
+        /// The file to act on, such as one written by another FilesCom command. The command uses its
+        /// Path and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.RemoteFile InputObject { get; set; }
+
+        /// <summary>Transform a file and save the output to a destination path.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
+            ErrorTarget = path;
+            Dictionary<string, object> parameters = TransformParameters();
+            if (!ShouldProcessOn(connection, $"File '{path}'"))
+            {
+                return;
+            }
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.TransformAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> TransformParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Destination)))
+            {
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(TransformType)))
+            {
+                parameters["transform_type"] = TransformType;
+            }
+            if (IsBound(nameof(TargetFormat)))
+            {
+                parameters["target_format"] = TargetFormat;
+            }
+            if (IsBound(nameof(Script)))
+            {
+                parameters["script"] = Script;
+            }
+            if (IsBound(nameof(Width)))
+            {
+                parameters["width"] = Width.Value;
+            }
+            if (IsBound(nameof(Height)))
+            {
+                parameters["height"] = Height.Value;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
+            }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Move File/Folder.
+    /// </summary>
+    [Cmdlet("Move", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject", "RemoteServer", "RemoteServerInputObject", "Snapshot", "SnapshotInputObject", "ChildSite", "ChildSiteInputObject" })]
+    public sealed class MoveFilesFileCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Path to operate on.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "RemoteServer")]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Snapshot")]
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "ChildSite")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Move destination path.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Path")]
+        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
+        [AllowEmptyString]
+        [ValidateNotNull]
+        public string Destination { get; set; }
+
+        /// <summary>
+        /// Overwrite existing file(s) in the destination?
+        /// </summary>
+        [Parameter(ParameterSetName = "Path")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [Parameter(ParameterSetName = "RemoteServer")]
+        [Parameter(ParameterSetName = "RemoteServerInputObject")]
+        [Parameter(ParameterSetName = "Snapshot")]
+        [Parameter(ParameterSetName = "SnapshotInputObject")]
+        [Parameter(ParameterSetName = "ChildSite")]
+        [Parameter(ParameterSetName = "ChildSiteInputObject")]
+        [ValidateNotNull]
+        public bool? Overwrite { get; set; }
+
+        /// <summary>
+        /// Sends the result to the remote server with this ID instead of a folder of this site.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "RemoteServer")]
+        [Parameter(Mandatory = true, ParameterSetName = "RemoteServerInputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long RemoteServerId { get; set; }
+
+        /// <summary>
+        /// Sends the result to the snapshot with this ID instead of a folder of this site.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "Snapshot")]
+        [Parameter(Mandatory = true, ParameterSetName = "SnapshotInputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long SnapshotId { get; set; }
+
+        /// <summary>
+        /// Sends the result to the child site with this ID instead of a folder of this site.
+        /// </summary>
+        [Parameter(Mandatory = true, ParameterSetName = "ChildSite")]
+        [Parameter(Mandatory = true, ParameterSetName = "ChildSiteInputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long ChildSiteId { get; set; }
+
+        /// <summary>
+        /// The path within the remote server, snapshot or child site to send to. Defaults to its root folder.
+        /// </summary>
+        [Parameter(ParameterSetName = "RemoteServer")]
+        [Parameter(ParameterSetName = "RemoteServerInputObject")]
+        [Parameter(ParameterSetName = "Snapshot")]
+        [Parameter(ParameterSetName = "SnapshotInputObject")]
+        [Parameter(ParameterSetName = "ChildSite")]
+        [Parameter(ParameterSetName = "ChildSiteInputObject")]
+        [ValidateNotNull]
+        public string DestinationPath { get; set; }
+
+        /// <summary>
+        /// The file to act on, such as one written by another FilesCom command. The command uses its
+        /// Path and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "RemoteServerInputObject")]
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "SnapshotInputObject")]
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "ChildSiteInputObject")]
+        [ValidateNotNull]
+        public Models.RemoteFile InputObject { get; set; }
+
+        /// <summary>Move File/Folder.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
+            ErrorTarget = path;
+            Dictionary<string, object> parameters = MoveParameters();
+            if (IsBound(nameof(RemoteServerId)))
+            {
+                if (!ShouldProcessOn(connection, $"File '{path}' to remote server {RemoteServerId}"))
+                {
+                    return;
+                }
+                WriteObject(Run(connection, token => RemoteFileBridge.MoveToRemoteServerAsync(connection, path, RemoteServerId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
+                return;
+            }
+            if (IsBound(nameof(SnapshotId)))
+            {
+                if (!ShouldProcessOn(connection, $"File '{path}' to snapshot {SnapshotId}"))
+                {
+                    return;
+                }
+                WriteObject(Run(connection, token => RemoteFileBridge.MoveToSnapshotAsync(connection, path, SnapshotId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
+                return;
+            }
+            if (IsBound(nameof(ChildSiteId)))
+            {
+                if (!ShouldProcessOn(connection, $"File '{path}' to child site {ChildSiteId}"))
+                {
+                    return;
+                }
+                WriteObject(Run(connection, token => RemoteFileBridge.MoveToChildSiteAsync(connection, path, ChildSiteId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
+                return;
+            }
+            if (!ShouldProcessOn(connection, $"File '{path}'"))
+            {
+                return;
+            }
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.MoveAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> MoveParameters()
+        {
+            var parameters = new Dictionary<string, object>();
+            if (IsBound(nameof(Destination)))
+            {
+                parameters["destination"] = Destination;
+            }
+            if (IsBound(nameof(Overwrite)))
+            {
+                parameters["overwrite"] = Overwrite.Value;
             }
             return parameters;
         }
@@ -839,159 +1459,11 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Move File/Folder.
+    /// Delete File/Folder and return its File Action.  A pending or processing deletion continues in the background after this returns; check its File Migration for completion.  Waiting for the File Migration does not cancel the deletion.
     /// </summary>
-    [Cmdlet("Move", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject", "RemoteServer", "RemoteServerInputObject", "Snapshot", "SnapshotInputObject", "ChildSite", "ChildSiteInputObject" })]
-    public sealed class MoveFilesFileCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Path to operate on.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "RemoteServer")]
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Snapshot")]
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "ChildSite")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Move destination path.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// Overwrite existing file(s) in the destination?
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [Parameter(ParameterSetName = "RemoteServer")]
-        [Parameter(ParameterSetName = "RemoteServerInputObject")]
-        [Parameter(ParameterSetName = "Snapshot")]
-        [Parameter(ParameterSetName = "SnapshotInputObject")]
-        [Parameter(ParameterSetName = "ChildSite")]
-        [Parameter(ParameterSetName = "ChildSiteInputObject")]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
-
-        /// <summary>
-        /// Sends the result to the remote server with this ID instead of a folder of this site.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "RemoteServer")]
-        [Parameter(Mandatory = true, ParameterSetName = "RemoteServerInputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long RemoteServerId { get; set; }
-
-        /// <summary>
-        /// Sends the result to the snapshot with this ID instead of a folder of this site.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Snapshot")]
-        [Parameter(Mandatory = true, ParameterSetName = "SnapshotInputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long SnapshotId { get; set; }
-
-        /// <summary>
-        /// Sends the result to the child site with this ID instead of a folder of this site.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "ChildSite")]
-        [Parameter(Mandatory = true, ParameterSetName = "ChildSiteInputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long ChildSiteId { get; set; }
-
-        /// <summary>
-        /// The path within the remote server, snapshot or child site to send to. Defaults to its root folder.
-        /// </summary>
-        [Parameter(ParameterSetName = "RemoteServer")]
-        [Parameter(ParameterSetName = "RemoteServerInputObject")]
-        [Parameter(ParameterSetName = "Snapshot")]
-        [Parameter(ParameterSetName = "SnapshotInputObject")]
-        [Parameter(ParameterSetName = "ChildSite")]
-        [Parameter(ParameterSetName = "ChildSiteInputObject")]
-        [ValidateNotNull]
-        public string DestinationPath { get; set; }
-
-        /// <summary>
-        /// The file to act on, such as one written by another FilesCom command. The command uses its
-        /// Path and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "RemoteServerInputObject")]
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "SnapshotInputObject")]
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "ChildSiteInputObject")]
-        [ValidateNotNull]
-        public Models.RemoteFile InputObject { get; set; }
-
-        /// <summary>Move File/Folder.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
-            ErrorTarget = path;
-            Dictionary<string, object> parameters = MoveParameters();
-            if (IsBound(nameof(RemoteServerId)))
-            {
-                if (!ShouldProcessOn(connection, $"File '{path}' to remote server {RemoteServerId}"))
-                {
-                    return;
-                }
-                WriteObject(Run(connection, token => RemoteFileBridge.MoveToRemoteServerAsync(connection, path, RemoteServerId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
-                return;
-            }
-            if (IsBound(nameof(SnapshotId)))
-            {
-                if (!ShouldProcessOn(connection, $"File '{path}' to snapshot {SnapshotId}"))
-                {
-                    return;
-                }
-                WriteObject(Run(connection, token => RemoteFileBridge.MoveToSnapshotAsync(connection, path, SnapshotId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
-                return;
-            }
-            if (IsBound(nameof(ChildSiteId)))
-            {
-                if (!ShouldProcessOn(connection, $"File '{path}' to child site {ChildSiteId}"))
-                {
-                    return;
-                }
-                WriteObject(Run(connection, token => RemoteFileBridge.MoveToChildSiteAsync(connection, path, ChildSiteId, DestinationPath, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token)));
-                return;
-            }
-            if (!ShouldProcessOn(connection, $"File '{path}'"))
-            {
-                return;
-            }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.MoveAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> MoveParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Destination)))
-            {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
-    /// Transform a file and save the output to a destination path.
-    /// </summary>
-    [Cmdlet("Convert", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [Cmdlet("Start", "FilesFileDeletion", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.High)]
     [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class ConvertFilesFileCommand : FilesApiCmdlet
+    public sealed class StartFilesFileDeletionCommand : FilesApiCmdlet
     {
         /// <summary>
         /// Path to operate on.
@@ -1002,65 +1474,12 @@ namespace FilesCom.PowerShell.Commands
         public string Path { get; set; }
 
         /// <summary>
-        /// Destination file path for the transformed output.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// Transform type. Supported values are `image_convert`, `document_convert`, and `files_transform_script_execute`.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string TransformType { get; set; }
-
-        /// <summary>
-        /// Destination format to create.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string TargetFormat { get; set; }
-
-        /// <summary>
-        /// Files TransformScript source. Required when transform_type is `files_transform_script_execute`.
+        /// If true, will recursively delete folders.  Otherwise, will error on non-empty folders.
         /// </summary>
         [Parameter(ParameterSetName = "Path")]
         [Parameter(ParameterSetName = "InputObject")]
         [ValidateNotNull]
-        public string Script { get; set; }
-
-        /// <summary>
-        /// Maximum output width for image_convert.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long? Width { get; set; }
-
-        /// <summary>
-        /// Maximum output height for image_convert.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long? Height { get; set; }
-
-        /// <summary>
-        /// Overwrite existing file in the destination?
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
+        public bool? Recursive { get; set; }
 
         /// <summary>
         /// The file to act on, such as one written by another FilesCom command. The command uses its
@@ -1070,446 +1489,27 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.RemoteFile InputObject { get; set; }
 
-        /// <summary>Transform a file and save the output to a destination path.</summary>
+        /// <summary>Delete File/Folder and return its File Action.  A pending or processing deletion continues in the background after this returns; check its File Migration for completion.  Waiting for the File Migration does not cancel the deletion.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
             ErrorTarget = path;
-            Dictionary<string, object> parameters = TransformParameters();
+            Dictionary<string, object> parameters = BeginDeleteParameters();
             if (!ShouldProcessOn(connection, $"File '{path}'"))
             {
                 return;
             }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.TransformAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Models.FileAction result = Run(connection, token => RemoteFileBridge.BeginDeleteAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
             WriteObject(result);
         }
 
-        private Dictionary<string, object> TransformParameters()
+        private Dictionary<string, object> BeginDeleteParameters()
         {
             var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Destination)))
+            if (IsBound(nameof(Recursive)))
             {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(TransformType)))
-            {
-                parameters["transform_type"] = TransformType;
-            }
-            if (IsBound(nameof(TargetFormat)))
-            {
-                parameters["target_format"] = TargetFormat;
-            }
-            if (IsBound(nameof(Script)))
-            {
-                parameters["script"] = Script;
-            }
-            if (IsBound(nameof(Width)))
-            {
-                parameters["width"] = Width.Value;
-            }
-            if (IsBound(nameof(Height)))
-            {
-                parameters["height"] = Height.Value;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
-    /// Decrypt a GPG-encrypted file and save it to a destination path.
-    /// </summary>
-    [Cmdlet("Unprotect", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class UnprotectFilesFileCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Path to operate on.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Destination file path for the decrypted file.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// GPG Key IDs to decrypt with. If omitted, every accessible private GPG key in the source workspace is used.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long[] GpgKeyIds { get; set; }
-
-        /// <summary>
-        /// Partner ID whose GPG keys should be used for decryption.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long? GpgKeyPartnerId { get; set; }
-
-        /// <summary>
-        /// Use every accessible private GPG key in the source workspace for decryption.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? UseAllPrivateKeys { get; set; }
-
-        /// <summary>
-        /// Ignore errors from the MDC (modification detection code) check.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? IgnoreMdcError { get; set; }
-
-        /// <summary>
-        /// Overwrite existing file in the destination?
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
-
-        /// <summary>
-        /// The file to act on, such as one written by another FilesCom command. The command uses its
-        /// Path and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public Models.RemoteFile InputObject { get; set; }
-
-        /// <summary>Decrypt a GPG-encrypted file and save it to a destination path.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
-            ErrorTarget = path;
-            Dictionary<string, object> parameters = GpgDecryptParameters();
-            if (!ShouldProcessOn(connection, $"File '{path}'"))
-            {
-                return;
-            }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.GpgDecryptAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> GpgDecryptParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Destination)))
-            {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(GpgKeyIds)))
-            {
-                parameters["gpg_key_ids"] = RequestValues.Int64s(GpgKeyIds);
-            }
-            if (IsBound(nameof(GpgKeyPartnerId)))
-            {
-                parameters["gpg_key_partner_id"] = GpgKeyPartnerId.Value;
-            }
-            if (IsBound(nameof(UseAllPrivateKeys)))
-            {
-                parameters["use_all_private_keys"] = UseAllPrivateKeys.Value;
-            }
-            if (IsBound(nameof(IgnoreMdcError)))
-            {
-                parameters["ignore_mdc_error"] = IgnoreMdcError.Value;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
-    /// Encrypt a file with GPG and save it to a destination path.
-    /// </summary>
-    [Cmdlet("Protect", "FilesFile", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class ProtectFilesFileCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Path to operate on.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Destination file path for the encrypted file.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// GPG Key IDs to encrypt with.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long[] GpgKeyIds { get; set; }
-
-        /// <summary>
-        /// Partner ID whose GPG keys should be used for encryption.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long? GpgKeyPartnerId { get; set; }
-
-        /// <summary>
-        /// Optional GPG Key ID to sign with.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long? SigningKeyId { get; set; }
-
-        /// <summary>
-        /// Output ASCII-armored encrypted data.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? Armor { get; set; }
-
-        /// <summary>
-        /// Overwrite existing file in the destination?
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
-
-        /// <summary>
-        /// The file to act on, such as one written by another FilesCom command. The command uses its
-        /// Path and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public Models.RemoteFile InputObject { get; set; }
-
-        /// <summary>Encrypt a file with GPG and save it to a destination path.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
-            ErrorTarget = path;
-            Dictionary<string, object> parameters = GpgEncryptParameters();
-            if (!ShouldProcessOn(connection, $"File '{path}'"))
-            {
-                return;
-            }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.GpgEncryptAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> GpgEncryptParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Destination)))
-            {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(GpgKeyIds)))
-            {
-                parameters["gpg_key_ids"] = RequestValues.Int64s(GpgKeyIds);
-            }
-            if (IsBound(nameof(GpgKeyPartnerId)))
-            {
-                parameters["gpg_key_partner_id"] = GpgKeyPartnerId.Value;
-            }
-            if (IsBound(nameof(SigningKeyId)))
-            {
-                parameters["signing_key_id"] = SigningKeyId.Value;
-            }
-            if (IsBound(nameof(Armor)))
-            {
-                parameters["armor"] = Armor.Value;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
-    /// Extract a ZIP file to a destination folder.
-    /// </summary>
-    [Cmdlet("Expand", "FilesArchive", DefaultParameterSetName = "Path", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.FileAction), ParameterSetName = new[] { "Path", "InputObject" })]
-    public sealed class ExpandFilesArchiveCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// ZIP file path to extract.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Path")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Destination folder path for extracted files.
-        /// </summary>
-        [Parameter(Mandatory = true, ParameterSetName = "Path")]
-        [Parameter(Mandatory = true, ParameterSetName = "InputObject")]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// Optional single entry filename to extract.
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public string Filename { get; set; }
-
-        /// <summary>
-        /// Overwrite existing files in the destination?
-        /// </summary>
-        [Parameter(ParameterSetName = "Path")]
-        [Parameter(ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
-
-        /// <summary>
-        /// The file to act on, such as one written by another FilesCom command. The command uses its
-        /// Path and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public Models.RemoteFile InputObject { get; set; }
-
-        /// <summary>Extract a ZIP file to a destination folder.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            string path = InputObject != null ? InputObject.Path ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Path.") : Path;
-            ErrorTarget = path;
-            Dictionary<string, object> parameters = UnzipParameters();
-            if (!ShouldProcessOn(connection, $"File '{path}'"))
-            {
-                return;
-            }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.UnzipAsync(connection, path, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> UnzipParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Destination)))
-            {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(Filename)))
-            {
-                parameters["filename"] = Filename;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
-            }
-            return parameters;
-        }
-    }
-
-    /// <summary>
-    /// Create a ZIP from one or more paths and save it to a destination path.
-    /// </summary>
-    [Cmdlet("Compress", "FilesArchive", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.FileAction))]
-    public sealed class CompressFilesArchiveCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Paths to include in the ZIP.
-        /// </summary>
-        [Parameter(Mandatory = true)]
-        [ValidateNotNull]
-        public string[] Paths { get; set; }
-
-        /// <summary>
-        /// Destination file path for the ZIP.
-        /// </summary>
-        [Parameter(Mandatory = true)]
-        [AllowEmptyString]
-        [ValidateNotNull]
-        public string Destination { get; set; }
-
-        /// <summary>
-        /// Archive format to create.
-        /// </summary>
-        [Parameter()]
-        [ValidateNotNull]
-        public string ArchiveFormat { get; set; }
-
-        /// <summary>
-        /// Overwrite existing file in the destination?
-        /// </summary>
-        [Parameter()]
-        [ValidateNotNull]
-        public bool? Overwrite { get; set; }
-
-        /// <summary>Create a ZIP from one or more paths and save it to a destination path.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection();
-            Dictionary<string, object> parameters = ZipParameters();
-            if (!ShouldProcessOn(connection, "File"))
-            {
-                return;
-            }
-            Models.FileAction result = Run(connection, token => RemoteFileBridge.ZipAsync(connection, parameters, CallOptions, token));
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> ZipParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            if (IsBound(nameof(Paths)))
-            {
-                parameters["paths"] = RequestValues.Strings(Paths, "Paths");
-            }
-            if (IsBound(nameof(Destination)))
-            {
-                parameters["destination"] = Destination;
-            }
-            if (IsBound(nameof(ArchiveFormat)))
-            {
-                parameters["archive_format"] = ArchiveFormat;
-            }
-            if (IsBound(nameof(Overwrite)))
-            {
-                parameters["overwrite"] = Overwrite.Value;
+                parameters["recursive"] = Recursive.Value;
             }
             return parameters;
         }

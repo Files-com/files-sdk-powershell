@@ -46,14 +46,14 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.PartnerSiteRequests.CreateAsync(parameters, requestOptions, token), source => PartnerSiteRequestBridge.Project(source, connection, options));
         }
 
-        internal static Task RejectAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
-        {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.PartnerSiteRequests.RejectAsync(parameters, requestOptions, token));
-        }
-
         internal static Task ApproveAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
         {
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.PartnerSiteRequests.ApproveAsync(parameters, requestOptions, token));
+        }
+
+        internal static Task RejectAsync(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options, CancellationToken cancellationToken)
+        {
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.PartnerSiteRequests.RejectAsync(parameters, requestOptions, token));
         }
 
         internal static Task DeleteAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)

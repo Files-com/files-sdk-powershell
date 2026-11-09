@@ -176,56 +176,6 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Cancel Automation Run.
-    /// </summary>
-    [Cmdlet("Stop", "FilesAutomationRun", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
-    [OutputType(typeof(Models.AutomationRun), ParameterSetName = new[] { "Id", "InputObject" })]
-    public sealed class StopFilesAutomationRunCommand : FilesApiCmdlet
-    {
-        /// <summary>
-        /// Automation Run ID.
-        /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Id")]
-        [FilesInteger]
-        [ValidateNotNull]
-        public long Id { get; set; }
-
-        /// <summary>
-        /// The automation run to act on, such as one written by another FilesCom command. The command uses its
-        /// Id and the connection that fetched it.
-        /// </summary>
-        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
-        [ValidateNotNull]
-        public Models.AutomationRun InputObject { get; set; }
-
-        /// <summary>Cancel Automation Run.</summary>
-        protected override void Execute()
-        {
-            FilesConnection connection = ResolveConnection(InputObject);
-            long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
-            ErrorTarget = id;
-            Dictionary<string, object> parameters = CancelParameters();
-            if (!ShouldProcessOn(connection, $"Automation run {id}"))
-            {
-                return;
-            }
-            Models.AutomationRun result = Run(connection, token => AutomationRunBridge.CancelAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
-            if (InputObject != null)
-            {
-                InputObject.CopyFrom(result);
-                result = InputObject;
-            }
-            WriteObject(result);
-        }
-
-        private Dictionary<string, object> CancelParameters()
-        {
-            var parameters = new Dictionary<string, object>();
-            return parameters;
-        }
-    }
-
-    /// <summary>
     /// Re-run Automation from Node.
     /// </summary>
     [Cmdlet("Restart", "FilesAutomationRun", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
@@ -284,6 +234,56 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["node_id"] = NodeId;
             }
+            return parameters;
+        }
+    }
+
+    /// <summary>
+    /// Cancel Automation Run.
+    /// </summary>
+    [Cmdlet("Stop", "FilesAutomationRun", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [OutputType(typeof(Models.AutomationRun), ParameterSetName = new[] { "Id", "InputObject" })]
+    public sealed class StopFilesAutomationRunCommand : FilesApiCmdlet
+    {
+        /// <summary>
+        /// Automation Run ID.
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ParameterSetName = "Id")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// The automation run to act on, such as one written by another FilesCom command. The command uses its
+        /// Id and the connection that fetched it.
+        /// </summary>
+        [Parameter(Mandatory = true, ValueFromPipeline = true, ParameterSetName = "InputObject")]
+        [ValidateNotNull]
+        public Models.AutomationRun InputObject { get; set; }
+
+        /// <summary>Cancel Automation Run.</summary>
+        protected override void Execute()
+        {
+            FilesConnection connection = ResolveConnection(InputObject);
+            long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
+            ErrorTarget = id;
+            Dictionary<string, object> parameters = CancelParameters();
+            if (!ShouldProcessOn(connection, $"Automation run {id}"))
+            {
+                return;
+            }
+            Models.AutomationRun result = Run(connection, token => AutomationRunBridge.CancelAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            if (InputObject != null)
+            {
+                InputObject.CopyFrom(result);
+                result = InputObject;
+            }
+            WriteObject(result);
+        }
+
+        private Dictionary<string, object> CancelParameters()
+        {
+            var parameters = new Dictionary<string, object>();
             return parameters;
         }
     }

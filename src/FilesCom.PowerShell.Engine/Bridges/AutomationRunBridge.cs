@@ -61,14 +61,14 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.AutomationRuns.FindNodeAsync(id, parameters, requestOptions, token), source => AutomationExecutionNodeBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.AutomationRun> CancelAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
-        {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.AutomationRun model ? model.CancelAsync(parameters, token) : client.AutomationRuns.CancelAsync(id, parameters, requestOptions, token), source => AutomationRunBridge.Project(source, connection, options));
-        }
-
         internal static Task<Models.AutomationRun> RerunAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.AutomationRun model ? model.RerunAsync(parameters, token) : client.AutomationRuns.RerunAsync(id, parameters, requestOptions, token), source => AutomationRunBridge.Project(source, connection, options));
+        }
+
+        internal static Task<Models.AutomationRun> CancelAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        {
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.AutomationRun model ? model.CancelAsync(parameters, token) : client.AutomationRuns.CancelAsync(id, parameters, requestOptions, token), source => AutomationRunBridge.Project(source, connection, options));
         }
     }
 }

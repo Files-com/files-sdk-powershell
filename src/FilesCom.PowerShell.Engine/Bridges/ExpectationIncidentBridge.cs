@@ -48,9 +48,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.ExpectationIncidents.FindAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.ExpectationIncident> ResolveAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.ExpectationIncident> AcknowledgeAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.ExpectationIncident model ? model.ResolveAsync(parameters, token) : client.ExpectationIncidents.ResolveAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.ExpectationIncident model ? model.AcknowledgeAsync(parameters, token) : client.ExpectationIncidents.AcknowledgeAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
         }
 
         internal static Task<Models.ExpectationIncident> SnoozeAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
@@ -58,9 +58,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.ExpectationIncident model ? model.SnoozeAsync(parameters, token) : client.ExpectationIncidents.SnoozeAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
         }
 
-        internal static Task<Models.ExpectationIncident> AcknowledgeAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task<Models.ExpectationIncident> ResolveAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.ExpectationIncident model ? model.AcknowledgeAsync(parameters, token) : client.ExpectationIncidents.AcknowledgeAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.ExpectationIncident model ? model.ResolveAsync(parameters, token) : client.ExpectationIncidents.ResolveAsync(id, parameters, requestOptions, token), source => ExpectationIncidentBridge.Project(source, connection, options));
         }
     }
 }

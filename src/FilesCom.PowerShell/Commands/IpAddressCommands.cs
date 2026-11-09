@@ -54,12 +54,12 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// List all possible public SmartFile IP addresses.
+    /// List all possible public IP addresses.
     /// </summary>
-    [Cmdlet("Get", "FilesSmartfileReservedIpAddress", DefaultParameterSetName = "List", SupportsPaging = true)]
+    [Cmdlet("Get", "FilesReservedIpAddress", DefaultParameterSetName = "List", SupportsPaging = true)]
     [OutputType(typeof(Models.PublicIpAddress), ParameterSetName = new[] { "List" })]
     [OutputType(typeof(FilesPage<Models.PublicIpAddress>), ParameterSetName = new[] { "Page", "Continuation" })]
-    public sealed class GetFilesSmartfileReservedIpAddressCommand : FilesListCmdlet<Models.PublicIpAddress>
+    public sealed class GetFilesReservedIpAddressCommand : FilesListCmdlet<Models.PublicIpAddress>
     {
         /// <summary>
         /// Used for pagination.  When a list request has more records available, cursors are provided in the response headers `X-Files-Cursor-Next` and `X-Files-Cursor-Prev`.  Send one of those cursor value here to resume an existing list from the next available record.  Note: many of our SDKs have iterator methods that will automatically handle cursor-based pagination.
@@ -78,13 +78,13 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public long? PerPage { get; set; }
 
-        /// <summary>List all possible public SmartFile IP addresses.</summary>
+        /// <summary>List all possible public IP addresses.</summary>
         protected override void Execute()
         {
-            WriteList(connection => IpAddressBridge.GetSmartfileReserved(connection, GetSmartfileReservedParameters(), CallOptions));
+            WriteList(connection => IpAddressBridge.GetReserved(connection, GetReservedParameters(), CallOptions));
         }
 
-        private Dictionary<string, object> GetSmartfileReservedParameters()
+        private Dictionary<string, object> GetReservedParameters()
         {
             var parameters = new Dictionary<string, object>();
             if (IsBound(nameof(Cursor)))
@@ -146,12 +146,12 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// List all possible public IP addresses.
+    /// List all possible public SmartFile IP addresses.
     /// </summary>
-    [Cmdlet("Get", "FilesReservedIpAddress", DefaultParameterSetName = "List", SupportsPaging = true)]
+    [Cmdlet("Get", "FilesSmartfileReservedIpAddress", DefaultParameterSetName = "List", SupportsPaging = true)]
     [OutputType(typeof(Models.PublicIpAddress), ParameterSetName = new[] { "List" })]
     [OutputType(typeof(FilesPage<Models.PublicIpAddress>), ParameterSetName = new[] { "Page", "Continuation" })]
-    public sealed class GetFilesReservedIpAddressCommand : FilesListCmdlet<Models.PublicIpAddress>
+    public sealed class GetFilesSmartfileReservedIpAddressCommand : FilesListCmdlet<Models.PublicIpAddress>
     {
         /// <summary>
         /// Used for pagination.  When a list request has more records available, cursors are provided in the response headers `X-Files-Cursor-Next` and `X-Files-Cursor-Prev`.  Send one of those cursor value here to resume an existing list from the next available record.  Note: many of our SDKs have iterator methods that will automatically handle cursor-based pagination.
@@ -170,13 +170,13 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public long? PerPage { get; set; }
 
-        /// <summary>List all possible public IP addresses.</summary>
+        /// <summary>List all possible public SmartFile IP addresses.</summary>
         protected override void Execute()
         {
-            WriteList(connection => IpAddressBridge.GetReserved(connection, GetReservedParameters(), CallOptions));
+            WriteList(connection => IpAddressBridge.GetSmartfileReserved(connection, GetSmartfileReservedParameters(), CallOptions));
         }
 
-        private Dictionary<string, object> GetReservedParameters()
+        private Dictionary<string, object> GetSmartfileReservedParameters()
         {
             var parameters = new Dictionary<string, object>();
             if (IsBound(nameof(Cursor)))

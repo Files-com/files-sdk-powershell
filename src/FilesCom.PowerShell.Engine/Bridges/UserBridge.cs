@@ -127,9 +127,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => client.Users.CreateAsync(Attachments.ForEngine(parameters), requestOptions, token), source => UserBridge.Project(source, connection, options));
         }
 
-        internal static Task UnlockAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task User2faResetAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.User model ? model.UnlockAsync(parameters, token) : client.Users.UnlockAsync(id, parameters, requestOptions, token));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.User model ? model.User2faResetAsync(parameters, token) : client.Users.User2faResetAsync(id, parameters, requestOptions, token));
         }
 
         internal static Task ResendWelcomeEmailAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
@@ -137,9 +137,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.User model ? model.ResendWelcomeEmailAsync(parameters, token) : client.Users.ResendWelcomeEmailAsync(id, parameters, requestOptions, token));
         }
 
-        internal static Task User2faResetAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
+        internal static Task UnlockAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)
         {
-            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.User model ? model.User2faResetAsync(parameters, token) : client.Users.User2faResetAsync(id, parameters, requestOptions, token));
+            return EngineCall.RunAsync(connection, options, cancellationToken, (client, requestOptions, token) => retained is Sdk.User model ? model.UnlockAsync(parameters, token) : client.Users.UnlockAsync(id, parameters, requestOptions, token));
         }
 
         internal static Task<Models.User> UpdateAsync(FilesConnection connection, long id, Dictionary<string, object> parameters, FilesCallOptions options, object retained, CancellationToken cancellationToken)

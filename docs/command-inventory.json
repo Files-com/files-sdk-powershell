@@ -1,6 +1,6 @@
 {
   "generated_from_schema": "swagger_doc-production.json",
-  "schema_sha256": "f040333f9327973a6b3cbb054a8b647fce135783563f2445dcf46bfdeac9e344",
+  "schema_sha256": "abd072f3f58f4c65b3e2d640ff27fdb8a9fa8d561159e2b86fd5058ca0415b72",
   "commands": [
     {
       "name": "Approve-FilesPartnerSiteRequest",
@@ -2096,6 +2096,12 @@
           "result_type": "RemoteFile",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -2106,12 +2112,6 @@
               "wire_name": "per_page",
               "type": "System.Int64",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             },
             {
               "name": "PreviewSize",
@@ -3467,6 +3467,12 @@
           "result_type": "FileComment",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -3477,12 +3483,6 @@
               "wire_name": "per_page",
               "type": "System.Int64",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             }
           ]
         }
@@ -3507,6 +3507,12 @@
           "result": "list",
           "result_type": "HistoryAction",
           "parameters": [
+            {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
             {
               "name": "StartAt",
               "wire_name": "start_at",
@@ -3542,12 +3548,6 @@
               "wire_name": "sort_by",
               "type": "System.Collections.IDictionary",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             }
           ]
         }
@@ -3665,6 +3665,12 @@
           "result_type": "Behavior",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -3687,12 +3693,6 @@
               "wire_name": "filter",
               "type": "System.Collections.IDictionary",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             },
             {
               "name": "AncestorBehaviors",
@@ -3723,6 +3723,12 @@
           "result": "list",
           "result_type": "HistoryAction",
           "parameters": [
+            {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
             {
               "name": "StartAt",
               "wire_name": "start_at",
@@ -3758,12 +3764,6 @@
               "wire_name": "sort_by",
               "type": "System.Collections.IDictionary",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             }
           ]
         }
@@ -3789,6 +3789,12 @@
           "result_type": "Request",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -3811,12 +3817,6 @@
               "wire_name": "mine",
               "type": "System.Boolean",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             }
           ]
         }
@@ -5396,6 +5396,12 @@
           "result_type": "Lock",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -5406,12 +5412,6 @@
               "wire_name": "per_page",
               "type": "System.Int64",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             },
             {
               "name": "IncludeChildren",
@@ -5443,6 +5443,12 @@
           "result_type": "MetadataCategory",
           "parameters": [
             {
+              "name": "Path",
+              "wire_name": "path",
+              "type": "System.String",
+              "required": true
+            },
+            {
               "name": "Cursor",
               "wire_name": "cursor",
               "type": "System.String",
@@ -5453,12 +5459,6 @@
               "wire_name": "per_page",
               "type": "System.Int64",
               "required": false
-            },
-            {
-              "name": "Path",
-              "wire_name": "path",
-              "type": "System.String",
-              "required": true
             }
           ]
         }
@@ -7964,6 +7964,12 @@
           "result_type": "HistoryAction",
           "parameters": [
             {
+              "name": "UserId",
+              "wire_name": "user_id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
               "name": "StartAt",
               "wire_name": "start_at",
               "type": "System.DateTimeOffset",
@@ -7998,12 +8004,6 @@
               "wire_name": "sort_by",
               "type": "System.Collections.IDictionary",
               "required": false
-            },
-            {
-              "name": "UserId",
-              "wire_name": "user_id",
-              "type": "System.Int64",
-              "required": true
             }
           ]
         }
@@ -23118,15 +23118,15 @@
   "route_aliases": [
     {
       "method": "GET",
-      "path": "/site/ip_addresses",
-      "canonical_path": "/ip_addresses",
-      "command": "Get-FilesIpAddress"
+      "path": "/site/api_keys",
+      "canonical_path": "/api_keys",
+      "command": "Get-FilesApiKey"
     },
     {
-      "method": "GET",
-      "path": "/site/dns_records",
-      "canonical_path": "/dns_records",
-      "command": "Get-FilesDnsRecord"
+      "method": "POST",
+      "path": "/site/api_keys",
+      "canonical_path": "/api_keys",
+      "command": "New-FilesApiKey"
     },
     {
       "method": "POST",
@@ -23136,33 +23136,27 @@
     },
     {
       "method": "GET",
-      "path": "/site/api_keys",
+      "path": "/site/dns_records",
+      "canonical_path": "/dns_records",
+      "command": "Get-FilesDnsRecord"
+    },
+    {
+      "method": "GET",
+      "path": "/site/ip_addresses",
+      "canonical_path": "/ip_addresses",
+      "command": "Get-FilesIpAddress"
+    },
+    {
+      "method": "GET",
+      "path": "/user/api_keys",
       "canonical_path": "/api_keys",
       "command": "Get-FilesApiKey"
     },
     {
       "method": "POST",
-      "path": "/site/api_keys",
+      "path": "/user/api_keys",
       "canonical_path": "/api_keys",
       "command": "New-FilesApiKey"
-    },
-    {
-      "method": "PATCH",
-      "path": "/user",
-      "canonical_path": "/users/{id}",
-      "command": "Set-FilesUser"
-    },
-    {
-      "method": "GET",
-      "path": "/user/public_keys",
-      "canonical_path": "/public_keys",
-      "command": "Get-FilesPublicKey"
-    },
-    {
-      "method": "POST",
-      "path": "/user/public_keys",
-      "canonical_path": "/public_keys",
-      "command": "New-FilesPublicKey"
     },
     {
       "method": "GET",
@@ -23172,27 +23166,45 @@
     },
     {
       "method": "GET",
-      "path": "/user/api_keys",
+      "path": "/user/public_keys",
+      "canonical_path": "/public_keys",
+      "command": "Get-FilesPublicKey"
+    },
+    {
+      "method": "POST",
+      "path": "/user/public_keys",
+      "canonical_path": "/public_keys",
+      "command": "New-FilesPublicKey"
+    },
+    {
+      "method": "PATCH",
+      "path": "/user",
+      "canonical_path": "/users/{id}",
+      "command": "Set-FilesUser"
+    },
+    {
+      "method": "GET",
+      "path": "/users/{user_id}/api_keys",
       "canonical_path": "/api_keys",
       "command": "Get-FilesApiKey"
     },
     {
       "method": "POST",
-      "path": "/user/api_keys",
+      "path": "/users/{user_id}/api_keys",
       "canonical_path": "/api_keys",
       "command": "New-FilesApiKey"
     },
     {
       "method": "GET",
-      "path": "/users/{user_id}/sftp_client_uses",
-      "canonical_path": "/user_sftp_client_uses",
-      "command": "Get-FilesUserSftpClientUse"
+      "path": "/users/{user_id}/groups",
+      "canonical_path": "/group_users",
+      "command": "Get-FilesGroupUser"
     },
     {
       "method": "GET",
-      "path": "/users/{user_id}/cipher_uses",
-      "canonical_path": "/user_cipher_uses",
-      "command": "Get-FilesUserCipherUse"
+      "path": "/users/{user_id}/permissions",
+      "canonical_path": "/permissions",
+      "command": "Get-FilesPermission"
     },
     {
       "method": "GET",
@@ -23208,27 +23220,15 @@
     },
     {
       "method": "GET",
-      "path": "/users/{user_id}/permissions",
-      "canonical_path": "/permissions",
-      "command": "Get-FilesPermission"
+      "path": "/users/{user_id}/cipher_uses",
+      "canonical_path": "/user_cipher_uses",
+      "command": "Get-FilesUserCipherUse"
     },
     {
       "method": "GET",
-      "path": "/users/{user_id}/groups",
-      "canonical_path": "/group_users",
-      "command": "Get-FilesGroupUser"
-    },
-    {
-      "method": "GET",
-      "path": "/users/{user_id}/api_keys",
-      "canonical_path": "/api_keys",
-      "command": "Get-FilesApiKey"
-    },
-    {
-      "method": "POST",
-      "path": "/users/{user_id}/api_keys",
-      "canonical_path": "/api_keys",
-      "command": "New-FilesApiKey"
+      "path": "/users/{user_id}/sftp_client_uses",
+      "canonical_path": "/user_sftp_client_uses",
+      "command": "Get-FilesUserSftpClientUse"
     },
     {
       "method": "GET",
@@ -23243,12 +23243,6 @@
       "command": "New-FilesUser"
     },
     {
-      "method": "GET",
-      "path": "/groups/{group_id}/permissions",
-      "canonical_path": "/permissions",
-      "command": "Get-FilesPermission"
-    },
-    {
       "method": "DELETE",
       "path": "/groups/{group_id}/memberships/{user_id}",
       "canonical_path": "/group_users/{id}",
@@ -23259,6 +23253,12 @@
       "path": "/groups/{group_id}/memberships/{user_id}",
       "canonical_path": "/group_users/{id}",
       "command": "Set-FilesGroupUser"
+    },
+    {
+      "method": "GET",
+      "path": "/groups/{group_id}/permissions",
+      "canonical_path": "/permissions",
+      "command": "Get-FilesPermission"
     }
   ],
   "handwritten_commands": [

@@ -105,11 +105,11 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Resolve an expectation incident.
+    /// Acknowledge an expectation incident.
     /// </summary>
-    [Cmdlet("Resolve", "FilesExpectationIncident", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [Cmdlet("Set", "FilesExpectationIncidentAcknowledgement", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
     [OutputType(typeof(Models.ExpectationIncident), ParameterSetName = new[] { "Id", "InputObject" })]
-    public sealed class ResolveFilesExpectationIncidentCommand : FilesApiCmdlet
+    public sealed class SetFilesExpectationIncidentAcknowledgementCommand : FilesApiCmdlet
     {
         /// <summary>
         /// Expectation Incident ID.
@@ -127,18 +127,18 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.ExpectationIncident InputObject { get; set; }
 
-        /// <summary>Resolve an expectation incident.</summary>
+        /// <summary>Acknowledge an expectation incident.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
             ErrorTarget = id;
-            Dictionary<string, object> parameters = ResolveParameters();
+            Dictionary<string, object> parameters = AcknowledgeParameters();
             if (!ShouldProcessOn(connection, $"Expectation incident {id}"))
             {
                 return;
             }
-            Models.ExpectationIncident result = Run(connection, token => ExpectationIncidentBridge.ResolveAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Models.ExpectationIncident result = Run(connection, token => ExpectationIncidentBridge.AcknowledgeAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
             if (InputObject != null)
             {
                 InputObject.CopyFrom(result);
@@ -147,7 +147,7 @@ namespace FilesCom.PowerShell.Commands
             WriteObject(result);
         }
 
-        private Dictionary<string, object> ResolveParameters()
+        private Dictionary<string, object> AcknowledgeParameters()
         {
             var parameters = new Dictionary<string, object>();
             return parameters;
@@ -218,11 +218,11 @@ namespace FilesCom.PowerShell.Commands
     }
 
     /// <summary>
-    /// Acknowledge an expectation incident.
+    /// Resolve an expectation incident.
     /// </summary>
-    [Cmdlet("Set", "FilesExpectationIncidentAcknowledgement", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
+    [Cmdlet("Resolve", "FilesExpectationIncident", DefaultParameterSetName = "Id", SupportsShouldProcess = true, ConfirmImpact = ConfirmImpact.Medium)]
     [OutputType(typeof(Models.ExpectationIncident), ParameterSetName = new[] { "Id", "InputObject" })]
-    public sealed class SetFilesExpectationIncidentAcknowledgementCommand : FilesApiCmdlet
+    public sealed class ResolveFilesExpectationIncidentCommand : FilesApiCmdlet
     {
         /// <summary>
         /// Expectation Incident ID.
@@ -240,18 +240,18 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public Models.ExpectationIncident InputObject { get; set; }
 
-        /// <summary>Acknowledge an expectation incident.</summary>
+        /// <summary>Resolve an expectation incident.</summary>
         protected override void Execute()
         {
             FilesConnection connection = ResolveConnection(InputObject);
             long id = InputObject != null ? InputObject.Id ?? throw new FilesException(FilesErrorKind.InvalidArgument, "The input object has no Id.") : Id;
             ErrorTarget = id;
-            Dictionary<string, object> parameters = AcknowledgeParameters();
+            Dictionary<string, object> parameters = ResolveParameters();
             if (!ShouldProcessOn(connection, $"Expectation incident {id}"))
             {
                 return;
             }
-            Models.ExpectationIncident result = Run(connection, token => ExpectationIncidentBridge.AcknowledgeAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
+            Models.ExpectationIncident result = Run(connection, token => ExpectationIncidentBridge.ResolveAsync(connection, id, parameters, CallOptionsFor(InputObject), RetainedModel(InputObject), token));
             if (InputObject != null)
             {
                 InputObject.CopyFrom(result);
@@ -260,7 +260,7 @@ namespace FilesCom.PowerShell.Commands
             WriteObject(result);
         }
 
-        private Dictionary<string, object> AcknowledgeParameters()
+        private Dictionary<string, object> ResolveParameters()
         {
             var parameters = new Dictionary<string, object>();
             return parameters;

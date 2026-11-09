@@ -32,9 +32,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.List(parameters, requestOptions), source => IpAddressBridge.Project(source, connection, options));
         }
 
-        internal static FilesPageSource<Models.PublicIpAddress> GetSmartfileReserved(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options)
+        internal static FilesPageSource<Models.PublicIpAddress> GetReserved(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options)
         {
-            return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.GetSmartfileReserved(parameters, requestOptions), source => PublicIpAddressBridge.Project(source, connection, options));
+            return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.GetReserved(parameters, requestOptions), source => PublicIpAddressBridge.Project(source, connection, options));
         }
 
         internal static FilesPageSource<Models.PublicIpAddress> GetExavaultReserved(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options)
@@ -42,9 +42,9 @@ namespace FilesCom.PowerShell.Engine
             return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.GetExavaultReserved(parameters, requestOptions), source => PublicIpAddressBridge.Project(source, connection, options));
         }
 
-        internal static FilesPageSource<Models.PublicIpAddress> GetReserved(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options)
+        internal static FilesPageSource<Models.PublicIpAddress> GetSmartfileReserved(FilesConnection connection, Dictionary<string, object> parameters, FilesCallOptions options)
         {
-            return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.GetReserved(parameters, requestOptions), source => PublicIpAddressBridge.Project(source, connection, options));
+            return EngineCall.Pages(connection, options, (client, requestOptions) => client.IpAddresses.GetSmartfileReserved(parameters, requestOptions), source => PublicIpAddressBridge.Project(source, connection, options));
         }
     }
 }
