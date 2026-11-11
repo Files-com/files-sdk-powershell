@@ -1,6 +1,6 @@
 {
   "generated_from_schema": "swagger_doc-production.json",
-  "schema_sha256": "be98ce1f5cf42dd8558ccb5febaa37591ce8bc340876b777559b6ea07dacfb1b",
+  "schema_sha256": "ca3582c80f334ee387dd7ff191ed7aea8ad1f0a2c9c9b4976d37672ede03b214",
   "commands": [
     {
       "name": "Approve-FilesPartnerSiteRequest",
@@ -10209,6 +10209,12 @@
               "required": false
             },
             {
+              "name": "ScheduleTimeExceptions",
+              "wire_name": "schedule_time_exceptions",
+              "type": "System.Collections.IDictionary[]",
+              "required": false
+            },
+            {
               "name": "LookbackInterval",
               "wire_name": "lookback_interval",
               "type": "System.Int64",
@@ -18071,6 +18077,12 @@
               "name": "HolidayRegion",
               "wire_name": "holiday_region",
               "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "ScheduleTimeExceptions",
+              "wire_name": "schedule_time_exceptions",
+              "type": "System.Collections.IDictionary[]",
               "required": false
             },
             {

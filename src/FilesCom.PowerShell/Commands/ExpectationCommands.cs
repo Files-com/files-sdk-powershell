@@ -221,6 +221,14 @@ namespace FilesCom.PowerShell.Commands
         public string HolidayRegion { get; set; }
 
         /// <summary>
+        /// Calendar-based replacement due times. Matching dates replace all normal times; holiday exclusions still apply. Calendars specifying different times on the same date conflict.
+        /// </summary>
+        [Parameter()]
+        [FilesDictionary]
+        [ValidateNotNull]
+        public System.Collections.IDictionary[] ScheduleTimeExceptions { get; set; }
+
+        /// <summary>
         /// How many seconds before the due boundary the window starts.
         /// </summary>
         [Parameter()]
@@ -343,6 +351,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(HolidayRegion)))
             {
                 parameters["holiday_region"] = HolidayRegion;
+            }
+            if (IsBound(nameof(ScheduleTimeExceptions)))
+            {
+                parameters["schedule_time_exceptions"] = RequestValues.Objects(ScheduleTimeExceptions, "ScheduleTimeExceptions");
             }
             if (IsBound(nameof(LookbackInterval)))
             {
@@ -557,6 +569,15 @@ namespace FilesCom.PowerShell.Commands
         public string HolidayRegion { get; set; }
 
         /// <summary>
+        /// Calendar-based replacement due times. Matching dates replace all normal times; holiday exclusions still apply. Calendars specifying different times on the same date conflict.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesDictionary]
+        [ValidateNotNull]
+        public System.Collections.IDictionary[] ScheduleTimeExceptions { get; set; }
+
+        /// <summary>
         /// How many seconds before the due boundary the window starts.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
@@ -700,6 +721,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(HolidayRegion)))
             {
                 parameters["holiday_region"] = HolidayRegion;
+            }
+            if (IsBound(nameof(ScheduleTimeExceptions)))
+            {
+                parameters["schedule_time_exceptions"] = RequestValues.Objects(ScheduleTimeExceptions, "ScheduleTimeExceptions");
             }
             if (IsBound(nameof(LookbackInterval)))
             {

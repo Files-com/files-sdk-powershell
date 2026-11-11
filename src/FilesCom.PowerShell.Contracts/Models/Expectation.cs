@@ -108,6 +108,11 @@ namespace FilesCom.PowerShell.Models
         public long? LookbackInterval { get; internal set; }
 
         /// <summary>
+        /// Calendar-based replacement due times. Matching dates replace all normal times; holiday exclusions still apply. Calendars specifying different times on the same date conflict.
+        /// </summary>
+        public object[] ScheduleTimeExceptions { get; internal set; }
+
+        /// <summary>
         /// How many seconds a schedule-driven window may remain eligible to close as late.
         /// </summary>
         public long? LateAcceptanceInterval { get; internal set; }
@@ -180,6 +185,7 @@ namespace FilesCom.PowerShell.Models
             ScheduleTimeZone = source.ScheduleTimeZone;
             HolidayRegion = source.HolidayRegion;
             LookbackInterval = source.LookbackInterval;
+            ScheduleTimeExceptions = source.ScheduleTimeExceptions;
             LateAcceptanceInterval = source.LateAcceptanceInterval;
             InactivityInterval = source.InactivityInterval;
             MaxOpenInterval = source.MaxOpenInterval;

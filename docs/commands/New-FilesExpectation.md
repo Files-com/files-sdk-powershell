@@ -367,6 +367,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -ScheduleTimeExceptions
+
+Calendar-based replacement due times. Matching dates replace all normal times; holiday exclusions still apply. Calendars specifying different times on the same date conflict.
+
+```yaml
+Type: System.Collections.IDictionary[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -LookbackInterval
 
 How many seconds before the due boundary the window starts.

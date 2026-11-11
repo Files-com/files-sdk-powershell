@@ -39,6 +39,7 @@ namespace FilesCom.PowerShell.Engine
                 ScheduleTimeZone = source.ScheduleTimeZone,
                 HolidayRegion = source.HolidayRegion,
                 LookbackInterval = source.LookbackInterval,
+                ScheduleTimeExceptions = Values.JsonArray(source.ScheduleTimeExceptions),
                 LateAcceptanceInterval = source.LateAcceptanceInterval,
                 InactivityInterval = source.InactivityInterval,
                 MaxOpenInterval = source.MaxOpenInterval,

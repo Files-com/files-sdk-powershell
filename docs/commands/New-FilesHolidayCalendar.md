@@ -37,7 +37,7 @@ The command supports -WhatIf, which describes the change without sending it to F
 ### Example 1: Create Holiday Calendar
 
 ```powershell
-New-FilesHolidayCalendar -Definition @{ months = @{ '0' = @(@{ name = 'Good Friday'; function = 'easter(year)'; function_modifier = -2 }); '1' = @(@{ name = 'New Year''s Day'; mday = 1; observed = 'to_weekday_if_weekend(date)' }, @{ name = 'Third Monday'; week = 3; wday = 1 }); '11' = @(@{ name = 'Thanksgiving'; week = 4; wday = 4 }); '12' = @(@{ name = 'Christmas Eve Early Close'; mday = 24; start_time = '13:00'; end_time = '17:00'; year_ranges = @{ from = 2026 } }) } } -Name 'Company Holidays'
+New-FilesHolidayCalendar -Definition @{ months = @{ '0' = @(@{ name = 'Good Friday'; function = 'easter(year)'; function_modifier = -2 }); '1' = @(@{ name = 'New Year''s Day'; mday = 1; observed = 'to_weekday_if_weekend(date)' }, @{ name = 'Third Monday'; week = 3; wday = 1 }); '11' = @(@{ name = 'Day after Thanksgiving'; week = 4; wday = 4; day_offset = 1 }); '12' = @(@{ name = 'Christmas Eve Early Close'; mday = 24; start_time = '13:00'; end_time = '17:00'; year_ranges = @{ from = 2026 } }) } } -Name 'Company Holidays'
 ```
 
 Writes the holiday calendar returned.
@@ -45,7 +45,7 @@ Writes the holiday calendar returned.
 ### Example 2: Preview the change
 
 ```powershell
-New-FilesHolidayCalendar -Definition @{ months = @{ '0' = @(@{ name = 'Good Friday'; function = 'easter(year)'; function_modifier = -2 }); '1' = @(@{ name = 'New Year''s Day'; mday = 1; observed = 'to_weekday_if_weekend(date)' }, @{ name = 'Third Monday'; week = 3; wday = 1 }); '11' = @(@{ name = 'Thanksgiving'; week = 4; wday = 4 }); '12' = @(@{ name = 'Christmas Eve Early Close'; mday = 24; start_time = '13:00'; end_time = '17:00'; year_ranges = @{ from = 2026 } }) } } -Name 'Company Holidays' -WhatIf
+New-FilesHolidayCalendar -Definition @{ months = @{ '0' = @(@{ name = 'Good Friday'; function = 'easter(year)'; function_modifier = -2 }); '1' = @(@{ name = 'New Year''s Day'; mday = 1; observed = 'to_weekday_if_weekend(date)' }, @{ name = 'Third Monday'; week = 3; wday = 1 }); '11' = @(@{ name = 'Day after Thanksgiving'; week = 4; wday = 4; day_offset = 1 }); '12' = @(@{ name = 'Christmas Eve Early Close'; mday = 24; start_time = '13:00'; end_time = '17:00'; year_ranges = @{ from = 2026 } }) } } -Name 'Company Holidays' -WhatIf
 ```
 
 Describes the change without sending anything to Files.com.
