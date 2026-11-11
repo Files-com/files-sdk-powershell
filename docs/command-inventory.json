@@ -1,6 +1,6 @@
 {
   "generated_from_schema": "swagger_doc-production.json",
-  "schema_sha256": "591fe681c1132923afb4afe7b9cefe191be1e0a8005669fe2f46ca9c4c16b827",
+  "schema_sha256": "be98ce1f5cf42dd8558ccb5febaa37591ce8bc340876b777559b6ea07dacfb1b",
   "commands": [
     {
       "name": "Approve-FilesPartnerSiteRequest",
@@ -17608,12 +17608,6 @@
             {
               "name": "Name",
               "wire_name": "name",
-              "type": "System.String",
-              "required": false
-            },
-            {
-              "name": "PermissionSet",
-              "wire_name": "permission_set",
               "type": "System.String",
               "required": false
             }
