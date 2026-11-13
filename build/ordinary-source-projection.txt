@@ -83,6 +83,7 @@
 /targets/mock-server/lint.sh
 /targets/mock-server/pre_commit.sh
 /targets/mock-server/scenarios/api-scenarios-canonical.json
+/targets/mock-server/scenarios/api-scenarios-remote-finalize.json
 /targets/mock-server/scenarios/failure-cases.json
 /targets/mock-server/scenarios/file-transfers.json
 /targets/mock-server/scenarios/folder-list.json
@@ -103,6 +104,7 @@
 /targets/mock-server/test/test_helper.rb
 /targets/mock-server/test/transfer_profiles_test.rb
 /targets/mock-server/test/transfers_test.rb
+/targets/mock-server/test/upload_finalization_test.rb
 /targets/mock-server/with-scenario.rb
 /targets/powershell/.editorconfig
 /targets/powershell/.github/workflows/publish.yml
