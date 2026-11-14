@@ -106,8 +106,10 @@ Send-FilesFile ./backup.tar -RemotePath backups/backup.tar -AutomaticConcurrency
 With `-CheckpointPath`, an interrupted upload, or a download bound to a version, continues where it stopped when the
 same command runs again, and `Send-FilesDirectory` and `Receive-FilesDirectory` transfer a whole folder, several files
 at once, with `-CheckpointDirectory` to continue it. `Receive-FilesFile` downloads a file whose storage is an Amazon S3
-endpoint over HTTPS in ranged parts, all of the version its storage answers the first part with, and fails with
-`Files.SourceChanged` rather than mixing versions; from other storage a file comes whole, in one request. A downloaded
+endpoint over HTTPS in ranged parts, all of the version its storage answers the first part with, and never mixes
+versions: when the file changes meanwhile, it downloads the file again from its start, as it is then, each time using
+one of the connection's `-MaxNetworkRetries`, and fails with `Files.SourceChanged` once they are used, or once bytes
+were written to an `-OutputStream`; from other storage a file comes whole, in one request. A downloaded
 file is put in place under its name only once complete, and replaces a file already there only with `-Force`, never a
 folder or link. `Test-FilesPath`, `Get-FilesFileContent`, `Set-FilesFileContent` and `Wait-FilesFileAction` use remote
 files the way local ones are, and wait for background copies, moves and deletes. `Open-FilesFileReadStream` and
@@ -128,7 +130,8 @@ and checkpoint checks still apply.
 
 Downloads also keep the first valid `Last-Modified` response date and send it as
 `If-Unmodified-Since` on subsequent requests and retries, including after URL renewal, unless a stronger
-`If-Match` condition is used. HTTP `412`, or a response with a newer date, stops the download with
+`If-Match` condition is used. HTTP `412`, or a response with a newer date, is a source change: the download
+starts again from the file's first byte, without the old date, as described above, and otherwise stops with
 `Files.SourceChanged`; run the command again to fetch the current file. Dates are best effort at one-second
 precision: preserved modification times, changes within the same second and edits during a response are
 not detected. Missing or invalid dates remain compatible. Files Agents may reject an unchanged file with

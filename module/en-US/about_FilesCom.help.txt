@@ -408,12 +408,15 @@ LONG DESCRIPTION
     file's storage is an Amazon S3 general-purpose endpoint over HTTPS, the
     engine binds the download to the version that storage answers its
     first part with, and downloads the rest in ranged parts of -PartSize,
-    up to -MaxConcurrency at once, each for that version only; if the file
-    changes meanwhile, the command fails with Files.SourceChanged and no
-    local file is put in place; a stream given with -OutputStream keeps the
-    whole parts written before the failure, and stays open. The result's
-    VersionBound says whether it was bound, and an answer from the Files.com
-    web app instead of the file's contents is refused.
+    up to -MaxConcurrency at once, each for that version only. If the file
+    changes meanwhile, what was fetched is discarded and the file is
+    downloaded again from its start, as it is then, each time using one of
+    the connection's -MaxNetworkRetries; once they are used, or once bytes
+    were written to a stream given with -OutputStream, the command fails
+    with Files.SourceChanged and no local file is put in place; the stream
+    keeps the whole parts written before the failure, and stays open. The
+    result's VersionBound says whether it was bound, and an answer from the
+    Files.com web app instead of the file's contents is refused.
 
     A local file is written by the engine into a stage, in a private
     folder it makes beside the destination, named like
