@@ -50,7 +50,7 @@ namespace FilesCom.PowerShell.Engine
         // download: bound to one version of the file where its storage allows, in checked parts written in order, or in
         // one request. The stream holds only whole parts after a failure; a caller that publishes a file does so only
         // after this completes. The web app's page and a version that changed are refused before bytes are written.
-        internal static Task<FilesDownloadResult> DownloadAsync(FilesConnection connection, string remotePath, Stream destination, string localPath, int? maxConcurrency, long? partSize, FilesTransferLimiter limiter, IProgress<FilesTransferProgress> progress, FilesCallOptions options, CancellationToken cancellationToken)
+        internal static Task<FilesDownloadResult> DownloadAsync(FilesConnection connection, string remotePath, Stream destination, string localPath, int? maxConcurrency, long? partSize, FilesTransferLimiter limiter, IProgress<FilesTransferProgress> progress, FilesCallOptions options, CancellationToken cancellationToken, bool? checkDownloadModificationTime = null)
         {
             return EngineCall.RunAsync(
                 connection,
@@ -59,6 +59,7 @@ namespace FilesCom.PowerShell.Engine
                 (client, requestOptions, token) => client.Transfers.DownloadStreamAsync(remotePath, destination, new DownloadOptions
                 {
                     MaxConcurrency = maxConcurrency,
+                    CheckDownloadModificationTime = checkDownloadModificationTime,
                     PartSize = partSize,
                     Limiter = (TransferLimiter)limiter?.EngineLimiter,
                     Progress = progress == null ? null : new DownloadProgressRelay(progress),
@@ -80,6 +81,7 @@ namespace FilesCom.PowerShell.Engine
                 (client, requestOptions, token) => Publishing(client.Transfers.DownloadFileAsync(remotePath, localPath, new DownloadOptions
                 {
                     MaxConcurrency = settings.MaxConcurrency,
+                    CheckDownloadModificationTime = settings.CheckDownloadModificationTime,
                     PartSize = settings.PartSize,
                     Limiter = (TransferLimiter)settings.Limiter?.EngineLimiter,
                     Progress = progress == null ? null : new DownloadProgressRelay(progress),

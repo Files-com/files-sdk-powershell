@@ -100,6 +100,15 @@ namespace FilesCom.PowerShell.Commands
         public int MaxNetworkRetries { get; set; }
 
         /// <summary>
+        /// Whether downloads check Last-Modified timestamps. Defaults to true; false leaves stronger ETag, size
+        /// and response checks in place. Receive-FilesFile can override this setting for one download.
+        /// </summary>
+        [Parameter(ParameterSetName = ApiKeySet)]
+        [Parameter(ParameterSetName = SessionSet)]
+        [Parameter(ParameterSetName = CredentialSet)]
+        public bool CheckDownloadModificationTime { get; set; } = true;
+
+        /// <summary>
         /// The wait, in seconds, before the first retry of a Files.com API request; each later retry waits twice as long,
         /// up to -MaxRetryDelaySeconds. Defaults to 0.1. A server that says when to retry is waited for instead.
         /// </summary>
@@ -261,6 +270,7 @@ namespace FilesCom.PowerShell.Commands
                 WorkspaceId = IsBound(nameof(WorkspaceId)) ? WorkspaceId : (long?)null,
                 Language = Language,
                 MaxNetworkRetries = IsBound(nameof(MaxNetworkRetries)) ? MaxNetworkRetries : (int?)null,
+                CheckDownloadModificationTime = IsBound(nameof(CheckDownloadModificationTime)) ? CheckDownloadModificationTime : (bool?)null,
                 OperationTimeout = IsBound(nameof(OperationTimeout)) ? OperationTimeout : (TimeSpan?)null,
                 ConnectTimeoutSeconds = IsBound(nameof(ConnectTimeoutSeconds)) ? ConnectTimeoutSeconds : (int?)null,
                 ReadTimeoutSeconds = IsBound(nameof(ReadTimeoutSeconds)) ? ReadTimeoutSeconds : (int?)null,

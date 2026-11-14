@@ -16,6 +16,8 @@ namespace FilesCom.PowerShell
 
         internal int? MaxNetworkRetries { get; set; }
 
+        internal bool? CheckDownloadModificationTime { get; set; }
+
         internal TimeSpan? OperationTimeout { get; set; }
 
         // The engine's network timeouts, in whole seconds.

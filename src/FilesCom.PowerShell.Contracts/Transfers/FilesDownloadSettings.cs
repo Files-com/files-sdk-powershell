@@ -3,7 +3,7 @@ namespace FilesCom.PowerShell
     // The download options Receive-FilesFile's caller chose for a local file. Null values leave the engine's defaults.
     internal sealed class FilesDownloadSettings
     {
-        internal FilesDownloadSettings(int? maxConcurrency, long? partSize, FilesTransferLimiter limiter, bool replaceRegularFile, string checkpointPath, FilesCheckpointRestart? checkpointRestart)
+        internal FilesDownloadSettings(int? maxConcurrency, long? partSize, FilesTransferLimiter limiter, bool replaceRegularFile, string checkpointPath, FilesCheckpointRestart? checkpointRestart, bool? checkDownloadModificationTime = null)
         {
             MaxConcurrency = maxConcurrency;
             PartSize = partSize;
@@ -11,7 +11,10 @@ namespace FilesCom.PowerShell
             ReplaceRegularFile = replaceRegularFile;
             CheckpointPath = checkpointPath;
             CheckpointRestart = checkpointRestart;
+            CheckDownloadModificationTime = checkDownloadModificationTime;
         }
+
+        internal bool? CheckDownloadModificationTime { get; }
 
         internal int? MaxConcurrency { get; }
 

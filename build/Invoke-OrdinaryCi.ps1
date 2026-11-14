@@ -57,7 +57,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # Every suite but the generated contract suite and the region suite.
-$ordinarySuites = @('Attachments', 'Cancellation', 'Connections', 'Directories', 'Errors', 'Examples', 'Module', 'Paging', 'Runtime', 'Transfers', 'Values', 'WhatIf', 'Workspace') |
+$ordinarySuites = @('Attachments', 'Cancellation', 'Connections', 'Directories', 'DownloadModificationTime', 'Errors', 'Examples', 'Module', 'Paging', 'Runtime', 'Transfers', 'Values', 'WhatIf', 'Workspace') |
     ForEach-Object { "$_.Tests.ps1" }
 
 # The job's source projection: the commit's files that this list names, one '/'-anchored literal path a line, the list

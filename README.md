@@ -114,6 +114,28 @@ files the way local ones are, and wait for background copies, moves and deletes.
 `Open-FilesFileWriteStream` open a remote file as a forward-only stream, read or written a piece at a time with bounded
 memory; closing a stream opened to write completes the file unless `Abandon()` was called first.
 
+Timestamp checks are enabled by default. Set `-CheckDownloadModificationTime:$false` on
+`Connect-FilesAccount` to disable them for that connection. `Receive-FilesFile` inherits the connection's
+setting unless the same Boolean parameter overrides it for that download, including `-OutputStream`:
+
+```powershell
+Receive-FilesFile -RemotePath reports/latest.csv -LiteralPath ./latest.csv -CheckDownloadModificationTime:$false
+```
+
+The value is fixed when the download starts. Disabling it suppresses automatic date headers and timestamp
+comparisons, so changes detectable only by timestamps can go unnoticed. Strong ETag, size, concurrency
+and checkpoint checks still apply.
+
+Downloads also keep the first valid `Last-Modified` response date and send it as
+`If-Unmodified-Since` on subsequent requests and retries, including after URL renewal, unless a stronger
+`If-Match` condition is used. HTTP `412`, or a response with a newer date, stops the download with
+`Files.SourceChanged`; run the command again to fetch the current file. Dates are best effort at one-second
+precision: preserved modification times, changes within the same second and edits during a response are
+not detected. Missing or invalid dates remain compatible. Files Agents may reject an unchanged file with
+a future modification time; correct that timestamp or wait until it is no longer in the future. Date checks do not enable parallel parts or
+checkpoint resume, which still need a strong version. Bytes already written to a supplied stream cannot
+be taken back, and an interrupted unbound response is not replayed after writing any bytes.
+
 ## Examples
 
 The module installs complete scripts for common tasks in its `examples` folder: exporting a user and permission

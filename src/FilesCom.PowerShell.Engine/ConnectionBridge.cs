@@ -221,6 +221,10 @@ namespace FilesCom.PowerShell.Engine
             {
                 configuration.Language = settings.Language;
             }
+            if (settings.CheckDownloadModificationTime.HasValue)
+            {
+                configuration.CheckDownloadModificationTime = settings.CheckDownloadModificationTime.Value;
+            }
             if (settings.MaxNetworkRetries.HasValue)
             {
                 configuration.MaxNetworkRetries = settings.MaxNetworkRetries.Value;

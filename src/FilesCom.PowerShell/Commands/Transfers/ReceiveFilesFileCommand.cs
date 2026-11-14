@@ -72,6 +72,13 @@ namespace FilesCom.PowerShell.Commands
         public int MaxConcurrency { get; set; }
 
         /// <summary>
+        /// Overrides the connection's Last-Modified timestamp checks for this download. Unset inherits the connection's
+        /// default, true. False leaves stronger ETag, size, concurrency and checkpoint checks in place.
+        /// </summary>
+        [Parameter]
+        public bool CheckDownloadModificationTime { get; set; } = true;
+
+        /// <summary>
         /// The size in bytes of each part fetched, 1 or more; by default 8 MiB. Into a stream, each part waits in memory
         /// until the parts before it have been written, so a part is no larger than the -Limiter's buffer space.
         /// </summary>
@@ -152,7 +159,8 @@ namespace FilesCom.PowerShell.Commands
                 Limiter,
                 run.Progress,
                 CallOptionsFor(InputObject),
-                run.Token));
+                run.Token,
+                IsBound(nameof(CheckDownloadModificationTime)) ? CheckDownloadModificationTime : (bool?)null));
             WritePassThru(result);
         }
 
@@ -191,7 +199,8 @@ namespace FilesCom.PowerShell.Commands
                 Limiter,
                 Force.IsPresent,
                 CheckpointPath == null ? null : LocalPaths.CheckpointFile(this, CheckpointPath),
-                IsBound(nameof(CheckpointRestart)) ? CheckpointRestart : (FilesCheckpointRestart?)null);
+                IsBound(nameof(CheckpointRestart)) ? CheckpointRestart : (FilesCheckpointRestart?)null,
+                IsBound(nameof(CheckDownloadModificationTime)) ? CheckDownloadModificationTime : (bool?)null);
         }
 
         // Refuses, before confirming or sending anything, a destination the engine's policy would refuse: without -Force

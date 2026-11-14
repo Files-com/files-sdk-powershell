@@ -274,6 +274,7 @@
 /targets/powershell/tests/Cancellation.Tests.ps1
 /targets/powershell/tests/Connections.Tests.ps1
 /targets/powershell/tests/Directories.Tests.ps1
+/targets/powershell/tests/DownloadModificationTime.Tests.ps1
 /targets/powershell/tests/Errors.Tests.ps1
 /targets/powershell/tests/Examples.Tests.ps1
 /targets/powershell/tests/FilesCom.PowerShell.TestService/FailingReceiver.cs

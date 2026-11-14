@@ -19,7 +19,7 @@ Downloads a file from Files.com to a local file or into a stream.
 ### LiteralPath (Default)
 
 ```
-Receive-FilesFile [-RemotePath] <string> [-LiteralPath] <string> [-Force] [-MaxConcurrency <int>]
+Receive-FilesFile [-RemotePath] <string> [-LiteralPath] <string> [-Force] [-MaxConcurrency <int>] [-CheckDownloadModificationTime <bool>]
  [-PartSize <long>] [-Limiter <FilesTransferLimiter>] [-CheckpointPath <string>]
  [-CheckpointRestart <FilesCheckpointRestart>] [-PassThru] [-Connection <FilesConnection>]
  [-WorkspaceScope <long>] [-NoWorkspaceScope] [-WhatIf] [-Confirm]
@@ -28,7 +28,7 @@ Receive-FilesFile [-RemotePath] <string> [-LiteralPath] <string> [-Force] [-MaxC
 ### Stream
 
 ```
-Receive-FilesFile [-RemotePath] <string> -OutputStream <Stream> [-MaxConcurrency <int>]
+Receive-FilesFile [-RemotePath] <string> -OutputStream <Stream> [-MaxConcurrency <int>] [-CheckDownloadModificationTime <bool>]
  [-PartSize <long>] [-Limiter <FilesTransferLimiter>] [-PassThru] [-Connection <FilesConnection>]
  [-WorkspaceScope <long>] [-NoWorkspaceScope] [-WhatIf] [-Confirm]
 ```
@@ -36,7 +36,7 @@ Receive-FilesFile [-RemotePath] <string> -OutputStream <Stream> [-MaxConcurrency
 ### InputObject
 
 ```
-Receive-FilesFile [-LiteralPath] <string> -InputObject <RemoteFile> [-Force] [-MaxConcurrency <int>]
+Receive-FilesFile [-LiteralPath] <string> -InputObject <RemoteFile> [-Force] [-MaxConcurrency <int>] [-CheckDownloadModificationTime <bool>]
  [-PartSize <long>] [-Limiter <FilesTransferLimiter>] [-CheckpointPath <string>]
  [-CheckpointRestart <FilesCheckpointRestart>] [-PassThru] [-Connection <FilesConnection>]
  [-WorkspaceScope <long>] [-NoWorkspaceScope] [-WhatIf] [-Confirm]
@@ -240,6 +240,27 @@ ParameterSets:
   Position: Named
   IsRequired: true
   ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -CheckDownloadModificationTime
+
+Whether this download checks Last-Modified timestamps. Unset inherits the connection setting, which defaults to true. Set -CheckDownloadModificationTime:$false to suppress automatic timestamp headers and comparisons, including for -OutputStream. Source changes detectable only by timestamps can then go unnoticed; stronger ETag, size, concurrency and checkpoint checks still apply. The value is fixed when the download starts.
+
+```yaml
+Type: System.Boolean
+DefaultValue: 'connection setting'
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false

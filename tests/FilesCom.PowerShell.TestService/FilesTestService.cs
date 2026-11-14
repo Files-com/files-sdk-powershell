@@ -240,6 +240,14 @@ namespace FilesCom.PowerShell.Tests
             versionedDownloads[remotePath] = new VersionedDownload { EntityTag = entityTag };
         }
 
+        /// <summary>A source with modification dates but no strong entity tag; its second response has reversed bytes.</summary>
+        public void ServeDatedDownload(string remotePath, byte[] content, string initialDate, string laterDate)
+        {
+            ServeVersionedDownload(remotePath, content, null);
+            versionedDownloads[remotePath].InitialDate = initialDate;
+            versionedDownloads[remotePath].LaterDate = laterDate;
+        }
+
         /// <summary>The Range requests a versioned download of remotePath was answered with 206 for, as "start-end", in the order answered.</summary>
         public IReadOnlyList<string> RangesServed(string remotePath)
         {
@@ -756,11 +764,17 @@ namespace FilesCom.PowerShell.Tests
                 return;
             }
             string tag;
+            string modified;
             byte[] content;
             lock (versioned)
             {
-                tag = "\"" + versioned.EntityTag + "\"";
+                tag = versioned.EntityTag == null ? null : "\"" + versioned.EntityTag + "\"";
                 content = downloads[remote];
+                modified = ++versioned.Responses == 1 ? versioned.InitialDate : versioned.LaterDate;
+                if (versioned.InitialDate != null && versioned.Responses > 1)
+                {
+                    content = content.Reverse().ToArray();
+                }
             }
             string ifMatch = request.Header("If-Match");
             if (ifMatch != null && ifMatch != tag)
@@ -768,7 +782,15 @@ namespace FilesCom.PowerShell.Tests
                 await Write(stream, 412, Encoding.UTF8.GetBytes("<Error>PreconditionFailed</Error>"), "application/xml", null).ConfigureAwait(false);
                 return;
             }
-            var headers = new Dictionary<string, string> { ["ETag"] = tag };
+            var headers = new Dictionary<string, string>();
+            if (tag != null)
+            {
+                headers["ETag"] = tag;
+            }
+            if (modified != null)
+            {
+                headers["Last-Modified"] = modified;
+            }
             if (bounds == null)
             {
                 await Write(stream, 200, content, "application/octet-stream", headers).ConfigureAwait(false);
@@ -833,6 +855,9 @@ namespace FilesCom.PowerShell.Tests
         private sealed class VersionedDownload
         {
             internal string EntityTag;
+            internal string InitialDate;
+            internal string LaterDate;
+            internal int Responses;
 
             internal ConcurrentQueue<string> Ranges { get; } = new ConcurrentQueue<string>();
         }

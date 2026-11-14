@@ -20,7 +20,7 @@ Connects to a Files.com site and makes the connection the default of the current
 
 ```
 Connect-FilesAccount -ApiKey <securestring> [-BaseUrl <string>] [-WorkspaceId <long>]
- [-Language <string>] [-MaxNetworkRetries <int>] [-RetryDelaySeconds <double>]
+ [-Language <string>] [-MaxNetworkRetries <int>] [-CheckDownloadModificationTime <bool>] [-RetryDelaySeconds <double>]
  [-MaxRetryDelaySeconds <double>] [-ConnectTimeoutSeconds <int>] [-ReadTimeoutSeconds <int>]
  [-WriteTimeoutSeconds <int>] [-Proxy <uri>] [-ProxyCredential <pscredential>]
  [-HttpMessageHandler <HttpMessageHandler>] [-DiagnosticDebug] [-LogLevel <FilesLogLevel>]
@@ -32,7 +32,7 @@ Connect-FilesAccount -ApiKey <securestring> [-BaseUrl <string>] [-WorkspaceId <l
 
 ```
 Connect-FilesAccount -SessionId <securestring> [-BaseUrl <string>] [-WorkspaceId <long>]
- [-Language <string>] [-MaxNetworkRetries <int>] [-RetryDelaySeconds <double>]
+ [-Language <string>] [-MaxNetworkRetries <int>] [-CheckDownloadModificationTime <bool>] [-RetryDelaySeconds <double>]
  [-MaxRetryDelaySeconds <double>] [-ConnectTimeoutSeconds <int>] [-ReadTimeoutSeconds <int>]
  [-WriteTimeoutSeconds <int>] [-Proxy <uri>] [-ProxyCredential <pscredential>]
  [-HttpMessageHandler <HttpMessageHandler>] [-DiagnosticDebug] [-LogLevel <FilesLogLevel>]
@@ -44,7 +44,7 @@ Connect-FilesAccount -SessionId <securestring> [-BaseUrl <string>] [-WorkspaceId
 
 ```
 Connect-FilesAccount -Credential <pscredential> [-OneTimePassword <string>] [-BaseUrl <string>]
- [-WorkspaceId <long>] [-Language <string>] [-MaxNetworkRetries <int>] [-RetryDelaySeconds <double>]
+ [-WorkspaceId <long>] [-Language <string>] [-MaxNetworkRetries <int>] [-CheckDownloadModificationTime <bool>] [-RetryDelaySeconds <double>]
  [-MaxRetryDelaySeconds <double>] [-ConnectTimeoutSeconds <int>] [-ReadTimeoutSeconds <int>]
  [-WriteTimeoutSeconds <int>] [-Proxy <uri>] [-ProxyCredential <pscredential>]
  [-HttpMessageHandler <HttpMessageHandler>] [-DiagnosticDebug] [-LogLevel <FilesLogLevel>]
@@ -356,6 +356,39 @@ The least severe engine diagnostic this connection's commands produce: Debug, In
 ```yaml
 Type: FilesCom.PowerShell.FilesLogLevel
 DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: ApiKey
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Session
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+- Name: Credential
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -CheckDownloadModificationTime
+
+Whether downloads use Last-Modified timestamps to guard later requests. True by default. Set -CheckDownloadModificationTime:$false to disable timestamp headers and comparisons for this connection; source changes detectable only by timestamps can then go unnoticed. Strong ETag, size, concurrency and checkpoint checks still apply. Receive-FilesFile can override the setting for one download.
+
+```yaml
+Type: System.Boolean
+DefaultValue: 'True'
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
