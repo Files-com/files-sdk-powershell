@@ -9,6 +9,10 @@ PowerShell 7, its .NET Framework build for Windows PowerShell 5.1), then runs ev
 pinned Pester, in a fresh process of that PowerShell, against that installed module. Fails when the package or Pester is
 missing, when the tests given include the generated contract tests and no mock server is named, when no test is found,
 when any test fails or is skipped, or when the run exceeds -TimeoutMinutes. Writes NUnit results to -ResultsPath.
+
+-Stage Install installs the module and builds the test service, and runs no test. -Stage Test runs the tests on the
+module and test service an Install run left in -ModulePath, as they are. Test runs on several PowerShells at once share
+one installation that way. The default, -Stage All, does both.
 #>
 [CmdletBinding()]
 param(
@@ -27,7 +31,10 @@ param(
     # The Files.com mock server the generated contract tests run against, required when they are among the tests.
     [string] $MockUrl = $env:FILESCOM_MOCK_URL,
 
-    [int] $TimeoutMinutes = 20
+    [int] $TimeoutMinutes = 20,
+
+    [ValidateSet('All', 'Install', 'Test')]
+    [string] $Stage = 'All'
 )
 
 Set-StrictMode -Version Latest
@@ -41,32 +48,57 @@ if (-not (Test-Path -LiteralPath $package)) {
 }
 # Installing a package extracts its payload and leaves out NuGet's own parts.
 $installed = Join-Path -Path ([System.IO.Path]::GetFullPath($ModulePath)) -ChildPath "installed/FilesCom.PowerShell/$version"
-if (Test-Path -LiteralPath $installed) {
-    Remove-Item -LiteralPath $installed -Recurse -Force
-}
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-$archive = [System.IO.Compression.ZipFile]::OpenRead($package)
-try {
-    foreach ($entry in $archive.Entries) {
-        $name = [uri]::UnescapeDataString($entry.FullName)
-        if ($name -eq '[Content_Types].xml' -or $name -like '_rels/*' -or $name -like 'package/*' -or $name -like '*.nuspec' -or $name.EndsWith('/')) {
-            continue
+$manifest = Join-Path -Path $installed -ChildPath 'FilesCom.PowerShell.psd1'
+if ($Stage -ne 'Test') {
+    if (Test-Path -LiteralPath $installed) {
+        Remove-Item -LiteralPath $installed -Recurse -Force
+    }
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($package)
+    try {
+        foreach ($entry in $archive.Entries) {
+            $name = [uri]::UnescapeDataString($entry.FullName)
+            if ($name -eq '[Content_Types].xml' -or $name -like '_rels/*' -or $name -like 'package/*' -or $name -like '*.nuspec' -or $name.EndsWith('/')) {
+                continue
+            }
+            $target = [System.IO.Path]::GetFullPath((Join-Path -Path $installed -ChildPath $name))
+            if (-not $target.StartsWith($installed + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::Ordinal)) {
+                throw "$package has an entry outside the module folder: $name."
+            }
+            New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force | Out-Null
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target)
         }
-        $target = [System.IO.Path]::GetFullPath((Join-Path -Path $installed -ChildPath $name))
-        if (-not $target.StartsWith($installed + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::Ordinal)) {
-            throw "$package has an entry outside the module folder: $name."
-        }
-        New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force | Out-Null
-        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target)
+    }
+    finally {
+        $archive.Dispose()
+    }
+    if (-not (Test-Path -LiteralPath $manifest)) {
+        throw "$package holds no FilesCom.PowerShell.psd1."
     }
 }
-finally {
-    $archive.Dispose()
+elseif (-not (Test-Path -LiteralPath $manifest)) {
+    throw "$manifest does not exist. Install the module first, with -Stage Install."
 }
-$manifest = Join-Path -Path $installed -ChildPath 'FilesCom.PowerShell.psd1'
-if (-not (Test-Path -LiteralPath $manifest)) {
-    throw "$package holds no FilesCom.PowerShell.psd1."
+
+# The test service loads into the tests' process, so it is built for that PowerShell's runtime.
+$hostVersion, $hostEdition = & $PowerShell -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString(); $PSVersionTable.PSEdition'
+$serviceFramework = if ($hostEdition -eq 'Desktop') { 'net48' } else { 'net8.0' }
+$service = Join-Path -Path ([System.IO.Path]::GetFullPath($ModulePath)) -ChildPath "testservice/$serviceFramework"
+$serviceAssembly = Join-Path -Path $service -ChildPath 'FilesCom.PowerShell.TestService.dll'
+if ($Stage -ne 'Test') {
+    dotnet build (Join-Path -Path $root -ChildPath 'tests/FilesCom.PowerShell.TestService/FilesCom.PowerShell.TestService.csproj') --configuration Release --framework $serviceFramework --output $service --disable-build-servers -p:UseSharedCompilation=false -nodeReuse:false | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Building the test service failed.'
+    }
 }
+elseif (-not (Test-Path -LiteralPath $serviceAssembly)) {
+    throw "$serviceAssembly does not exist. Build it first, with -Stage Install."
+}
+if ($Stage -eq 'Install') {
+    Write-Information "Installed the module in $installed and built the test service in $service for PowerShell $hostVersion." -InformationAction Continue
+    return
+}
+
 $paths = @($TestPath | ForEach-Object { (Resolve-Path -LiteralPath $_).Path })
 $contractTests = @(foreach ($path in $paths) {
         if (Test-Path -LiteralPath $path -PathType Container) {
@@ -85,18 +117,9 @@ if (-not (Test-Path -LiteralPath $pester)) {
     throw "Pester is not in $ToolsPath. Run build/Restore-Tools.ps1 first."
 }
 
-# The test service loads into the tests' process, so it is built for that PowerShell's runtime.
-$hostVersion, $hostEdition = & $PowerShell -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString(); $PSVersionTable.PSEdition'
-$serviceFramework = if ($hostEdition -eq 'Desktop') { 'net48' } else { 'net8.0' }
-$service = Join-Path -Path ([System.IO.Path]::GetFullPath($ModulePath)) -ChildPath "testservice/$serviceFramework"
-dotnet build (Join-Path -Path $root -ChildPath 'tests/FilesCom.PowerShell.TestService/FilesCom.PowerShell.TestService.csproj') --configuration Release --framework $serviceFramework --output $service --disable-build-servers -p:UseSharedCompilation=false -nodeReuse:false | Out-Host
-if ($LASTEXITCODE -ne 0) {
-    throw 'Building the test service failed.'
-}
-
 New-Item -ItemType Directory -Path $ResultsPath -Force | Out-Null
 $resultFile = Join-Path -Path ([System.IO.Path]::GetFullPath($ResultsPath)) -ChildPath "pester-$hostVersion.xml"
-$environment = @{ FILESCOM_MODULE_MANIFEST = $manifest; FILESCOM_TEST_SERVICE = (Join-Path -Path $service -ChildPath 'FilesCom.PowerShell.TestService.dll') }
+$environment = @{ FILESCOM_MODULE_MANIFEST = $manifest; FILESCOM_TEST_SERVICE = $serviceAssembly }
 if ($MockUrl) {
     $environment.FILESCOM_MOCK_URL = $MockUrl
 }

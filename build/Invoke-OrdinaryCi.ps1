@@ -21,14 +21,18 @@ Linux, it:
 - runs build.sh, which restores the pinned tools, builds, documents, imports and packs the module, and requires the
   module's record of its schema and engine to be the ones checked;
 - analyzes the module's scripts, examples and ordinary test suites and its C# sources (build/Invoke-Analysis.ps1);
-- runs the ordinary test suites with build/Test-Module.ps1 on each pinned PowerShell in turn, as an unprivileged user
-  in two groups, and requires every suite to have run tests, all of which passed. That user is the job's own when the
-  job does not run as root and its user is in two groups; when the job runs as root, it is a user in two groups made
-  for the run. The job fails, naming its user and groups, when neither is so;
+- installs the module from its package, and builds the test service for each pinned PowerShell's runtime, with
+  build/Test-Module.ps1, before any test runs;
+- runs the ordinary test suites with build/Test-Module.ps1 on every pinned PowerShell at the same time, against that
+  installation, as an unprivileged user in two groups, and requires every suite to have run tests, all of which
+  passed. That user is the job's own when the job does not run as root and its user is in two groups; when the job runs
+  as root, it is a user in two groups made for the run. The job fails, naming its user and groups, when neither is so;
 - after each PowerShell's tests, runs the generator's shared API scenarios (verification/scenarios/api.json) through
   the installed module's public commands on that PowerShell, as the same user, each against a fresh simulator, with
   build/Invoke-ApiScenarios.ps1, and requires every simulator step of each to pass, with a complete journal joined to
-  every request the module sent, and the consumer's controls to refuse what they must.
+  every request the module sent, and the consumer's controls to refuse what they must. Each PowerShell's tests and
+  scenarios write only their own results, runs and logs, and the job prints each PowerShell's logs once all have
+  finished.
 
 The generated contract suite, which needs the shared mock server, the region suite and the catalogue adapter are not
 part of this job, and its result says nothing about them. Their sources are not in the projection, and the job fails if
@@ -350,17 +354,18 @@ $summary = [ordered]@{
     steps = [System.Collections.Generic.List[object]]::new()
 }
 
-# Runs one step, timed, and records what it returns, or how it failed, in summary.json.
+# Runs one step, timed, and records what it returns, or how it failed, in summary.json. -Seconds is how long the step's
+# work took before the step began, when that work ran alongside other steps' and the action checks its outcome.
 function Invoke-Step {
-    param([string] $Name, [scriptblock] $Action)
+    param([string] $Name, [scriptblock] $Action, [double] $Seconds = 0)
     Write-Information "Step: $Name" -InformationAction Continue
     $watch = [System.Diagnostics.Stopwatch]::StartNew()
     try {
         $details = & $Action
-        $summary.steps.Add([ordered]@{ name = $Name; result = 'passed'; seconds = [math]::Round($watch.Elapsed.TotalSeconds, 3); details = $details })
+        $summary.steps.Add([ordered]@{ name = $Name; result = 'passed'; seconds = [math]::Round($Seconds + $watch.Elapsed.TotalSeconds, 3); details = $details })
     }
     catch {
-        $summary.steps.Add([ordered]@{ name = $Name; result = 'failed'; seconds = [math]::Round($watch.Elapsed.TotalSeconds, 3); error = $_.Exception.Message })
+        $summary.steps.Add([ordered]@{ name = $Name; result = 'failed'; seconds = [math]::Round($Seconds + $watch.Elapsed.TotalSeconds, 3); error = $_.Exception.Message })
         throw
     }
 }
@@ -761,40 +766,114 @@ try {
         [ordered]@{ mode = $script:testUserMode; uid = $userId; groups = $userGroups }
     }
 
-    $testPaths = @($ordinarySuites | ForEach-Object { Join-Path -Path $generated -ChildPath "tests/$_" })
-    foreach ($hostVersion in $hostVersions) {
-        Invoke-Step -Name "tests on PowerShell $hostVersion" -Action {
-            $results = Join-Path -Path $EvidencePath -ChildPath "tests/$hostVersion"
-            $testModule = Join-Path -Path $generated -ChildPath 'build/Test-Module.ps1'
+    $testModule = Join-Path -Path $generated -ChildPath 'build/Test-Module.ps1'
+    $modulePath = Join-Path -Path $generated -ChildPath 'out'
+    $launcherArguments = @($script:testLauncher | Select-Object -Skip 1)
+    # The module, installed from the package, and the test service each pinned PowerShell's runtime needs, made as the
+    # tests' user before any test runs, so that every PowerShell's tests and API scenarios can use them at the same
+    # time.
+    Invoke-Step -Name 'installation for the tests' -Action {
+        foreach ($hostVersion in $hostVersions) {
             $hostPath = Join-Path -Path $WorkPath -ChildPath "powershell/$hostVersion/pwsh"
-            $command = "& $(ConvertTo-Literal $testModule) -ToolsPath $(ConvertTo-Literal $env:FILESCOM_TOOLS) -PowerShell $(ConvertTo-Literal $hostPath) -ModulePath $(ConvertTo-Literal (Join-Path -Path $generated -ChildPath 'out')) -ResultsPath $(ConvertTo-Literal $results) -TestPath $(ConvertTo-Literal $testPaths)"
-            Invoke-Checked -FilePath $script:testLauncher[0] -ArgumentList (@($script:testLauncher | Select-Object -Skip 1) + @($pwsh, '-NoProfile', '-NonInteractive', '-Command', $command)) -LogPath (Join-Path -Path $logs.FullName -ChildPath "tests-$hostVersion.log")
-            [ordered]@{ results = "tests/$hostVersion/pester-$hostVersion.xml"; suites = Assert-TestResult -Path (Join-Path -Path $results -ChildPath "pester-$hostVersion.xml") -Suites $ordinarySuites }
+            $command = "& $(ConvertTo-Literal $testModule) -Stage Install -ToolsPath $(ConvertTo-Literal $env:FILESCOM_TOOLS) -PowerShell $(ConvertTo-Literal $hostPath) -ModulePath $(ConvertTo-Literal $modulePath)"
+            Invoke-Checked -FilePath $script:testLauncher[0] -ArgumentList ($launcherArguments + @($pwsh, '-NoProfile', '-NonInteractive', '-Command', $command)) -LogPath (Join-Path -Path $logs.FullName -ChildPath "install-$hostVersion.log")
         }
-        # The shared API scenarios, through the module Test-Module.ps1 just installed from the package, on the same
-        # PowerShell and as the same user. The launcher and its simulator get the generator's bundle by name besides the
-        # tests' fixed environment, and the consumer only the launcher's FILES_MOCK_* values more: no CI token or other
-        # job secret reaches either.
-        Invoke-Step -Name "API scenarios on PowerShell $hostVersion" -Action {
-            $version = (Get-Content -LiteralPath (Join-Path -Path $generated -ChildPath '_VERSION') -Raw).Trim()
-            $outPath = Join-Path -Path $EvidencePath -ChildPath "canonical/$hostVersion"
+        [ordered]@{ powershell = $hostVersions }
+    }
+
+    # Each pinned PowerShell's runs: its tests, through Test-Module.ps1 on the installation above, then the shared API
+    # scenarios, through that installed module on the same PowerShell and as the same user. The launcher and its
+    # simulator get the generator's bundle by name besides the tests' fixed environment, and the consumer only the
+    # launcher's FILES_MOCK_* values more: no CI token or other job secret reaches either.
+    $testPaths = @($ordinarySuites | ForEach-Object { Join-Path -Path $generated -ChildPath "tests/$_" })
+    $version = (Get-Content -LiteralPath (Join-Path -Path $generated -ChildPath '_VERSION') -Raw).Trim()
+    $schemaSha256 = Get-Sha256 -Path $script:schemaPath
+    $hostRuns = @(foreach ($hostVersion in $hostVersions) {
             $hostPath = Join-Path -Path $WorkPath -ChildPath "powershell/$hostVersion/pwsh"
+            $results = Join-Path -Path $EvidencePath -ChildPath "tests/$hostVersion"
+            $command = "& $(ConvertTo-Literal $testModule) -Stage Test -ToolsPath $(ConvertTo-Literal $env:FILESCOM_TOOLS) -PowerShell $(ConvertTo-Literal $hostPath) -ModulePath $(ConvertTo-Literal $modulePath) -ResultsPath $(ConvertTo-Literal $results) -TestPath $(ConvertTo-Literal $testPaths)"
             $scenarios = @(
                 $hostPath, '-NoProfile', '-NonInteractive', '-File', (Join-Path -Path $generated -ChildPath 'build/Invoke-ApiScenarios.ps1'),
-                '-ModuleManifest', (Join-Path -Path $generated -ChildPath "out/installed/FilesCom.PowerShell/$version/FilesCom.PowerShell.psd1"),
-                '-PackagePath', (Join-Path -Path $generated -ChildPath "out/packages/FilesCom.PowerShell.$version.nupkg"),
+                '-ModuleManifest', (Join-Path -Path $modulePath -ChildPath "installed/FilesCom.PowerShell/$version/FilesCom.PowerShell.psd1"),
+                '-PackagePath', (Join-Path -Path $modulePath -ChildPath "packages/FilesCom.PowerShell.$version.nupkg"),
                 '-MockServer', $mockServer,
                 '-ScenarioRoot', (Join-Path -Path $generated -ChildPath 'verification/api-scenarios'),
                 '-DefinitionPath', (Join-Path -Path $projectRoot -ChildPath 'verification/scenarios/api.json'),
-                '-SchemaSha256', (Get-Sha256 -Path $script:schemaPath),
-                '-OutPath', $outPath)
-            Invoke-Checked -FilePath $script:testLauncher[0] -ArgumentList (@($script:testLauncher | Select-Object -Skip 1) + @("BUNDLE_PATH=$env:BUNDLE_PATH") + $scenarios) -LogPath (Join-Path -Path $logs.FullName -ChildPath "api-scenarios-$hostVersion.log")
-            $runs = Get-Content -LiteralPath (Join-Path -Path $outPath -ChildPath 'summary.json') -Raw | ConvertFrom-Json
-            if ($runs.result -cne 'passed') {
-                throw "The API scenarios on PowerShell $hostVersion did not pass: see canonical/$hostVersion/summary.json."
+                '-SchemaSha256', $schemaSha256,
+                '-OutPath', (Join-Path -Path $EvidencePath -ChildPath "canonical/$hostVersion"))
+            [pscustomobject]@{
+                HostVersion = $hostVersion
+                Results = $results
+                Tests = @($script:testLauncher[0]) + $launcherArguments + @($pwsh, '-NoProfile', '-NonInteractive', '-Command', $command)
+                TestsLog = Join-Path -Path $logs.FullName -ChildPath "tests-$hostVersion.log"
+                Scenarios = @($script:testLauncher[0]) + $launcherArguments + @("BUNDLE_PATH=$env:BUNDLE_PATH") + $scenarios
+                ScenariosLog = Join-Path -Path $logs.FullName -ChildPath "api-scenarios-$hostVersion.log"
             }
-            [ordered]@{ summary = "canonical/$hostVersion/summary.json"; runs = @($runs.runs | ForEach-Object { [ordered]@{ name = $_.name; result = $_.result } }) }
+        })
+    # Every PowerShell's runs at the same time, each one's output in its log alone. A PowerShell's API scenarios run
+    # only once its tests have passed. Each run reports its progress as lines of text, which this runspace prints, and
+    # then its outcome.
+    Write-Information "Running the tests and API scenarios on PowerShell $($hostVersions -join ', ') at the same time." -InformationAction Continue
+    $finished = @{}
+    $hostRuns | ForEach-Object -ThrottleLimit $hostRuns.Count -Parallel {
+        $ErrorActionPreference = 'Stop'
+        $run = $_
+        $outcome = [ordered]@{ HostVersion = $run.HostVersion; TestsExit = $null; TestsSeconds = 0; ScenariosExit = $null; ScenariosSeconds = 0 }
+        $watch = [System.Diagnostics.Stopwatch]::StartNew()
+        $arguments = @($run.Tests | Select-Object -Skip 1)
+        & $run.Tests[0] @arguments 2>&1 | Out-File -LiteralPath $run.TestsLog
+        $outcome.TestsExit = $LASTEXITCODE
+        $outcome.TestsSeconds = $watch.Elapsed.TotalSeconds
+        "Tests on PowerShell $($run.HostVersion) finished with exit code $($outcome.TestsExit) after $([math]::Round($outcome.TestsSeconds)) s."
+        if ($outcome.TestsExit -eq 0) {
+            $watch.Restart()
+            $arguments = @($run.Scenarios | Select-Object -Skip 1)
+            & $run.Scenarios[0] @arguments 2>&1 | Out-File -LiteralPath $run.ScenariosLog
+            $outcome.ScenariosExit = $LASTEXITCODE
+            $outcome.ScenariosSeconds = $watch.Elapsed.TotalSeconds
+            "API scenarios on PowerShell $($run.HostVersion) finished with exit code $($outcome.ScenariosExit) after $([math]::Round($outcome.ScenariosSeconds)) s."
         }
+        [pscustomobject] $outcome
+    } | ForEach-Object {
+        if ($_ -is [string]) {
+            Write-Information $_ -InformationAction Continue
+        }
+        else {
+            $finished[$_.HostVersion] = $_
+        }
+    }
+
+    # Each PowerShell's steps in turn, each printing its log. Every PowerShell's steps are checked and recorded before a
+    # failure stops the job.
+    $failures = [System.Collections.Generic.List[string]]::new()
+    foreach ($run in $hostRuns) {
+        $outcome = $finished[$run.HostVersion]
+        try {
+            Invoke-Step -Name "tests on PowerShell $($run.HostVersion)" -Seconds $outcome.TestsSeconds -Action {
+                Get-Content -LiteralPath $run.TestsLog | Out-Host
+                if ($outcome.TestsExit -ne 0) {
+                    throw "The tests on PowerShell $($run.HostVersion) exited with code $($outcome.TestsExit): see logs/tests-$($run.HostVersion).log."
+                }
+                [ordered]@{ results = "tests/$($run.HostVersion)/pester-$($run.HostVersion).xml"; suites = Assert-TestResult -Path (Join-Path -Path $run.Results -ChildPath "pester-$($run.HostVersion).xml") -Suites $ordinarySuites }
+            }
+            Invoke-Step -Name "API scenarios on PowerShell $($run.HostVersion)" -Seconds $outcome.ScenariosSeconds -Action {
+                Get-Content -LiteralPath $run.ScenariosLog | Out-Host
+                if ($outcome.ScenariosExit -ne 0) {
+                    throw "The API scenarios on PowerShell $($run.HostVersion) exited with code $($outcome.ScenariosExit): see logs/api-scenarios-$($run.HostVersion).log."
+                }
+                $runs = Get-Content -LiteralPath (Join-Path -Path $EvidencePath -ChildPath "canonical/$($run.HostVersion)/summary.json") -Raw | ConvertFrom-Json
+                if ($runs.result -cne 'passed') {
+                    throw "The API scenarios on PowerShell $($run.HostVersion) did not pass: see canonical/$($run.HostVersion)/summary.json."
+                }
+                [ordered]@{ summary = "canonical/$($run.HostVersion)/summary.json"; runs = @($runs.runs | ForEach-Object { [ordered]@{ name = $_.name; result = $_.result } }) }
+            }
+        }
+        catch {
+            $failures.Add($_.Exception.Message)
+        }
+    }
+    if ($failures.Count) {
+        throw ($failures -join ' ')
     }
     $summary.result = 'passed'
 }
