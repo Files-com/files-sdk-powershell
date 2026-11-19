@@ -38,12 +38,12 @@ namespace FilesCom.PowerShell.Models
         public string FieldType { get; internal set; }
 
         /// <summary>
-        /// Options to display for radio and dropdown
+        /// Options to display for radio, dropdown, and multi_select
         /// </summary>
         public string[] OptionsForSelect { get; internal set; }
 
         /// <summary>
-        /// Default option for radio and dropdown
+        /// Default option for radio, dropdown, and multi_select
         /// </summary>
         public string DefaultOption { get; internal set; }
 
