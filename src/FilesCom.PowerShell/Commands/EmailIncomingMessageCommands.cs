@@ -33,7 +33,7 @@ namespace FilesCom.PowerShell.Commands
         public long? PerPage { get; set; }
 
         /// <summary>
-        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `sender`, `status` or `inbox_id`.
+        /// If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `workspace_id`, `sender`, `status` or `inbox_id`.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
         [Parameter(ParameterSetName = "Page")]
@@ -42,7 +42,7 @@ namespace FilesCom.PowerShell.Commands
         public System.Collections.IDictionary SortBy { get; set; }
 
         /// <summary>
-        /// If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `inbox_id`, `sender` or `status`. Valid field combinations are `[ inbox_id, created_at ]`, `[ sender, created_at ]`, `[ status, created_at ]`, `[ inbox_id, status ]`, `[ status, sender ]`, `[ inbox_id, status, created_at ]`, `[ status, sender, created_at ]`, `[ inbox_id, status, sender ]` or `[ inbox_id, status, sender, created_at ]`.
+        /// If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `inbox_id`, `sender`, `status` or `workspace_id`. Valid field combinations are `[ inbox_id, created_at ]`, `[ sender, created_at ]`, `[ status, created_at ]`, `[ workspace_id, created_at ]`, `[ inbox_id, status ]`, `[ workspace_id, inbox_id ]`, `[ status, sender ]`, `[ workspace_id, sender ]`, `[ workspace_id, status ]`, `[ inbox_id, status, created_at ]`, `[ workspace_id, inbox_id, created_at ]`, `[ status, sender, created_at ]`, `[ workspace_id, sender, created_at ]`, `[ workspace_id, status, created_at ]`, `[ inbox_id, status, sender ]`, `[ workspace_id, inbox_id, status ]`, `[ workspace_id, status, sender ]`, `[ inbox_id, status, sender, created_at ]`, `[ workspace_id, inbox_id, status, created_at ]`, `[ workspace_id, status, sender, created_at ]`, `[ workspace_id, inbox_id, status, sender ]` or `[ workspace_id, inbox_id, status, sender, created_at ]`.
         /// </summary>
         [Parameter(ParameterSetName = "List")]
         [Parameter(ParameterSetName = "Page")]

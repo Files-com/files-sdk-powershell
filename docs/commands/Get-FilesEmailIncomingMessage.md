@@ -121,7 +121,7 @@ HelpMessage: ''
 
 ### -SortBy
 
-If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `sender`, `status` or `inbox_id`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, sort records by the specified field in either `asc` or `desc` direction. Valid fields are `created_at`, `workspace_id`, `sender`, `status` or `inbox_id`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary
@@ -148,7 +148,7 @@ HelpMessage: ''
 
 ### -Filter
 
-If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `inbox_id`, `sender` or `status`. Valid field combinations are `[ inbox_id, created_at ]`, `[ sender, created_at ]`, `[ status, created_at ]`, `[ inbox_id, status ]`, `[ status, sender ]`, `[ inbox_id, status, created_at ]`, `[ status, sender, created_at ]`, `[ inbox_id, status, sender ]` or `[ inbox_id, status, sender, created_at ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
+If set, return records where the specified field is equal to the supplied value. Valid fields are `created_at`, `inbox_id`, `sender`, `status` or `workspace_id`. Valid field combinations are `[ inbox_id, created_at ]`, `[ sender, created_at ]`, `[ status, created_at ]`, `[ workspace_id, created_at ]`, `[ inbox_id, status ]`, `[ workspace_id, inbox_id ]`, `[ status, sender ]`, `[ workspace_id, sender ]`, `[ workspace_id, status ]`, `[ inbox_id, status, created_at ]`, `[ workspace_id, inbox_id, created_at ]`, `[ status, sender, created_at ]`, `[ workspace_id, sender, created_at ]`, `[ workspace_id, status, created_at ]`, `[ inbox_id, status, sender ]`, `[ workspace_id, inbox_id, status ]`, `[ workspace_id, status, sender ]`, `[ inbox_id, status, sender, created_at ]`, `[ workspace_id, inbox_id, status, created_at ]`, `[ workspace_id, status, sender, created_at ]`, `[ workspace_id, inbox_id, status, sender ]` or `[ workspace_id, inbox_id, status, sender, created_at ]`. Give a hashtable or PSCustomObject; keys keep their case and values their types.
 
 ```yaml
 Type: System.Collections.IDictionary

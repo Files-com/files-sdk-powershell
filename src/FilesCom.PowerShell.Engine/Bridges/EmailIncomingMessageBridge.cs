@@ -22,6 +22,7 @@ namespace FilesCom.PowerShell.Engine
                 EngineModel = source,
                 Id = source.Id,
                 InboxId = source.InboxId,
+                WorkspaceId = source.WorkspaceId,
                 Sender = source.Sender,
                 SenderName = source.SenderName,
                 Status = source.Status,

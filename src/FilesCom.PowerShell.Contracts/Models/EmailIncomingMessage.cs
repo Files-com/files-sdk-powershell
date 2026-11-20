@@ -23,6 +23,11 @@ namespace FilesCom.PowerShell.Models
         public long? InboxId { get; internal set; }
 
         /// <summary>
+        /// ID of the Workspace that owns the Inbox. The Default Workspace has ID 0.
+        /// </summary>
+        public long? WorkspaceId { get; internal set; }
+
+        /// <summary>
         /// Sender of the email
         /// </summary>
         public string Sender { get; internal set; }
@@ -38,7 +43,7 @@ namespace FilesCom.PowerShell.Models
         public string Status { get; internal set; }
 
         /// <summary>
-        /// Body of the email
+        /// Body of the email. Only available to Site Administrators.
         /// </summary>
         public string Body { get; internal set; }
 
