@@ -6,7 +6,7 @@
     "format": "files-api-scenarios",
     "format_version": 1
   },
-  "schema_sha256": "d13853a4aafea4dd8287bf2945d4defcd0835d8a5dbf1d6d577281bae56e7b63",
+  "schema_sha256": "12e14e012b2690a9ac1f12cbb0c182b2da38ff8f7c5d86da0ed93372cd30c23a",
   "module_version": "1.1.0",
   "recipes": [
     {

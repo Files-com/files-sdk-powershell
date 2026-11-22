@@ -192,11 +192,11 @@ namespace FilesCom.PowerShell.Commands
         public bool? AlwaysMkdirParents { get; set; }
 
         /// <summary>
-        /// Include this email in welcome emails if enabled
+        /// Copy welcome emails to this address when the email contains neither a create-password link nor a password.
         /// </summary>
         [Parameter()]
         [ValidateNotNull]
-        public string WelcomeEmailCc { get; set; }
+        public System.Security.SecureString WelcomeEmailCc { get; set; }
 
         /// <summary>
         /// Include this email subject in welcome emails if enabled
@@ -1461,7 +1461,7 @@ namespace FilesCom.PowerShell.Commands
             }
             if (IsBound(nameof(WelcomeEmailCc)))
             {
-                parameters["welcome_email_cc"] = WelcomeEmailCc;
+                parameters["welcome_email_cc"] = RequestValues.Reveal(WelcomeEmailCc);
             }
             if (IsBound(nameof(WelcomeEmailSubject)))
             {

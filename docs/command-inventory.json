@@ -1,6 +1,6 @@
 {
   "generated_from_schema": "swagger_doc-production.json",
-  "schema_sha256": "d13853a4aafea4dd8287bf2945d4defcd0835d8a5dbf1d6d577281bae56e7b63",
+  "schema_sha256": "12e14e012b2690a9ac1f12cbb0c182b2da38ff8f7c5d86da0ed93372cd30c23a",
   "commands": [
     {
       "name": "Approve-FilesPartnerSiteRequest",
@@ -20668,7 +20668,7 @@
             {
               "name": "WelcomeEmailCc",
               "wire_name": "welcome_email_cc",
-              "type": "System.String",
+              "type": "System.Security.SecureString",
               "required": false
             },
             {

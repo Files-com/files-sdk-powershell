@@ -155,7 +155,7 @@ namespace FilesCom.PowerShell.Commands
         public bool? AllowUserCreation { get; set; }
 
         /// <summary>
-        /// When `true`, emails sent to Partner users are copied to the responsible User or Group.
+        /// When `true`, the responsible User or Group receives eligible email copies for Partner Users without their own Responsible Party. Welcome emails trigger a separate onboarding notice. Password recovery links, email verification codes, and signed export links go only to the primary email address.
         /// </summary>
         [Parameter()]
         [ValidateNotNull]
@@ -379,7 +379,7 @@ namespace FilesCom.PowerShell.Commands
         public bool? AllowUserCreation { get; set; }
 
         /// <summary>
-        /// When `true`, emails sent to Partner users are copied to the responsible User or Group.
+        /// When `true`, the responsible User or Group receives eligible email copies for Partner Users without their own Responsible Party. Welcome emails trigger a separate onboarding notice. Password recovery links, email verification codes, and signed export links go only to the primary email address.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
         [Parameter(ParameterSetName = "InputObject")]

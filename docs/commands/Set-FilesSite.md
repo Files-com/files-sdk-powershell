@@ -329,10 +329,10 @@ HelpMessage: ''
 
 ### -WelcomeEmailCc
 
-Include this email in welcome emails if enabled
+Copy welcome emails to this address when the email contains neither a create-password link nor a password. Give a SecureString, such as one from Read-Host -AsSecureString or Get-Secret; text typed on the command line, even inside ConvertTo-SecureString, stays in command history.
 
 ```yaml
-Type: System.String
+Type: System.Security.SecureString
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []

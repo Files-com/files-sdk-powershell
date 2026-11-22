@@ -943,7 +943,7 @@ namespace FilesCom.PowerShell.Models
         public string EmailFooterCustomText { get; internal set; }
 
         /// <summary>
-        /// Include this email in welcome emails if enabled
+        /// Copy welcome emails to this address when the email contains neither a create-password link nor a password.
         /// </summary>
         public string WelcomeEmailCc { get; internal set; }
 
