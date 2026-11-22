@@ -63,7 +63,7 @@ namespace FilesCom.PowerShell.Models
         public DateTime? LastLoginAt { get; internal set; }
 
         /// <summary>
-        /// Only returned when generating keys. Private key generated for the user.
+        /// Available for 60 minutes after key creation, only to the API key or login session that requested generation.
         /// </summary>
         public FilesSecret GeneratedPrivateKey { get; internal set; }
 
