@@ -153,9 +153,14 @@ namespace FilesCom.PowerShell.Models
         public DateTime? EffectiveExpiresAt { get; internal set; }
 
         /// <summary>
-        /// Maximum number of times bundle can be accessed
+        /// Visitor limit configured for this Share Link. Null uses the Site-wide cap, if set. The configured limit cannot exceed the Site-wide cap.
         /// </summary>
         public long? MaxUses { get; internal set; }
+
+        /// <summary>
+        /// Read-only visitor limit actually enforced for this Share Link. Uses the lower of the link limit and the Site-wide cap when both are set. Null means unlimited.
+        /// </summary>
+        public long? EffectiveMaxUses { get; internal set; }
 
         /// <summary>
         /// Internal name for identifying this Share Link.
@@ -290,6 +295,7 @@ namespace FilesCom.PowerShell.Models
             DontSeparateSubmissionsByFolder = source.DontSeparateSubmissionsByFolder;
             EffectiveExpiresAt = source.EffectiveExpiresAt;
             MaxUses = source.MaxUses;
+            EffectiveMaxUses = source.EffectiveMaxUses;
             InternalName = source.InternalName;
             Note = source.Note;
             PathTemplate = source.PathTemplate;

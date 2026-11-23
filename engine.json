@@ -1,6 +1,6 @@
 {
   "comment": "The FilesCom .NET SDK package the module is built on. Before build.sh runs, build/Restore-PublishedEngine.ps1 restores it from NuGet and records its SHA-256 here and in the engine lock.",
   "package": "FilesCom",
-  "version": "2.0.59",
-  "schema_sha256": "ed3cdf2c6be4b31d8dcd9c68dab4ac11d248d5e52f8aa341b5383d16d2e2efd4"
+  "version": "2.0.60",
+  "schema_sha256": "ee774b2c0e674fa6e66e6715ed431f901f2b42109b2f9dd819938054dfcc5c09"
 }

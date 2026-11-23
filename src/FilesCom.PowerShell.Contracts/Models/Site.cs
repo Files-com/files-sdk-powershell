@@ -143,6 +143,11 @@ namespace FilesCom.PowerShell.Models
         public long? BundleExpiration { get; internal set; }
 
         /// <summary>
+        /// Maximum visitors per Share Link on this Site. Applies immediately to existing Share Links and across all Workspaces. Null disables the Site-wide cap.
+        /// </summary>
+        public long? BundleMaxUses { get; internal set; }
+
+        /// <summary>
         /// Custom error message to show when bundle is not found.
         /// </summary>
         public string BundleNotFoundMessage { get; internal set; }

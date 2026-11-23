@@ -273,7 +273,7 @@ namespace FilesCom.PowerShell.Commands
         public bool? FinalizeSnapshot { get; set; }
 
         /// <summary>
-        /// Maximum number of times bundle can be accessed
+        /// Visitor limit configured for this Share Link. Null uses the Site-wide cap, if set. The configured limit cannot exceed the Site-wide cap.
         /// </summary>
         [Parameter()]
         [FilesInteger]
@@ -785,7 +785,7 @@ namespace FilesCom.PowerShell.Commands
         public long? InboxId { get; set; }
 
         /// <summary>
-        /// Maximum number of times bundle can be accessed
+        /// Visitor limit configured for this Share Link. Null uses the Site-wide cap, if set. The configured limit cannot exceed the Site-wide cap.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
         [Parameter(ParameterSetName = "InputObject")]

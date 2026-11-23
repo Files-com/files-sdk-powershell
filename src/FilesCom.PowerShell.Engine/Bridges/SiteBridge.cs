@@ -46,6 +46,7 @@ namespace FilesCom.PowerShell.Engine
                 AskAboutOverwrites = source.AskAboutOverwrites,
                 BundleActivityNotifications = source.BundleActivityNotifications,
                 BundleExpiration = source.BundleExpiration,
+                BundleMaxUses = source.BundleMaxUses,
                 BundleNotFoundMessage = source.BundleNotFoundMessage,
                 BundlePasswordRequired = source.BundlePasswordRequired,
                 BundlesDefaultOwnedByPrimaryGroup = source.BundlesDefaultOwnedByPrimaryGroup,

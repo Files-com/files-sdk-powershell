@@ -419,7 +419,7 @@ HelpMessage: ''
 
 ### -MaxUses
 
-Maximum number of times bundle can be accessed
+Visitor limit configured for this Share Link. Null uses the Site-wide cap, if set. The configured limit cannot exceed the Site-wide cap.
 
 ```yaml
 Type: System.Int64

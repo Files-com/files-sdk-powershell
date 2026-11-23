@@ -164,6 +164,14 @@ namespace FilesCom.PowerShell.Commands
         public long? BundleExpiration { get; set; }
 
         /// <summary>
+        /// Maximum visitors per Share Link on this Site. Applies immediately to existing Share Links and across all Workspaces. Null disables the Site-wide cap.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? BundleMaxUses { get; set; }
+
+        /// <summary>
         /// Will the welcome email be sent to new users?
         /// </summary>
         [Parameter()]
@@ -1442,6 +1450,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(BundleExpiration)))
             {
                 parameters["bundle_expiration"] = BundleExpiration.Value;
+            }
+            if (IsBound(nameof(BundleMaxUses)))
+            {
+                parameters["bundle_max_uses"] = BundleMaxUses.Value;
             }
             if (IsBound(nameof(WelcomeEmailEnabled)))
             {

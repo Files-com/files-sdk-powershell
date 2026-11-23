@@ -243,6 +243,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -BundleMaxUses
+
+Maximum visitors per Share Link on this Site. Applies immediately to existing Share Links and across all Workspaces. Null disables the Site-wide cap.
+
+```yaml
+Type: System.Int64
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -WelcomeEmailEnabled
 
 Will the welcome email be sent to new users?

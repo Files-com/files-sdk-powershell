@@ -49,6 +49,7 @@ namespace FilesCom.PowerShell.Engine
                 DontSeparateSubmissionsByFolder = source.DontSeparateSubmissionsByFolder,
                 EffectiveExpiresAt = Values.Utc(source.EffectiveExpiresAt),
                 MaxUses = source.MaxUses,
+                EffectiveMaxUses = source.EffectiveMaxUses,
                 InternalName = source.InternalName,
                 Note = source.Note,
                 PathTemplate = source.PathTemplate,
