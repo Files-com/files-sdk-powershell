@@ -36,6 +36,7 @@ namespace FilesCom.PowerShell.Engine
                 RecurringDays = Values.Copy(source.RecurringDays),
                 ScheduleId = source.ScheduleId,
                 ScheduleDaysOfWeek = Values.Copy(source.ScheduleDaysOfWeek),
+                ScheduleIntervalMinutes = source.ScheduleIntervalMinutes,
                 ScheduleTimesOfDay = Values.Copy(source.ScheduleTimesOfDay),
                 ScheduleTimeZone = source.ScheduleTimeZone,
                 HolidayRegion = source.HolidayRegion,

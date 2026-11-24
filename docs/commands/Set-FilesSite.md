@@ -264,6 +264,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -DangerouslyUseCustomDomainForTransferUrls
+
+Allow eligible Remote Server Mount and Files.com Agent transfer URLs to use the Site's custom domain. Enabling can serve file content from the same hostname as the signed-in web app. Disabled by default.
+
+```yaml
+Type: System.Boolean
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -WelcomeEmailEnabled
 
 Will the welcome email be sent to new users?

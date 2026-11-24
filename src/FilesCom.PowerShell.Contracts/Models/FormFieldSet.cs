@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace FilesCom.PowerShell.Models
 {
     /// <summary>
-    /// A Form Field Set is a custom form to be used for bundle and inbox registrations.
+    /// A Form Field Set is a custom form that can be used for Share Link and Inbox registrations, Partner Channel uploads, and Shared Workflows.
     /// </summary>
     public sealed class FormFieldSet : FilesObject
     {
@@ -53,7 +53,7 @@ namespace FilesCom.PowerShell.Models
         public bool SkipCompany { get; internal set; }
 
         /// <summary>
-        /// Form Field Set is in use by an active Inbox / Bundle / Inbox Registration / Bundle Registration
+        /// Form Field Set is in use by an active Inbox, Share Link, Partner Channel upload destination, or Shared Trigger.
         /// </summary>
         public bool InUse { get; internal set; }
 

@@ -467,6 +467,15 @@ namespace FilesCom.PowerShell.Commands
         public string Name { get; set; }
 
         /// <summary>
+        /// Custom Workspace a new Group member will use as their Preferred Workspace if they have no saved preference. The Group must have a Permission in that Workspace.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? PreferredWorkspaceId { get; set; }
+
+        /// <summary>
         /// The group to act on, such as one written by another FilesCom command. The command uses its
         /// Id and the connection that fetched it.
         /// </summary>
@@ -548,6 +557,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(Name)))
             {
                 parameters["name"] = Name;
+            }
+            if (IsBound(nameof(PreferredWorkspaceId)))
+            {
+                parameters["preferred_workspace_id"] = PreferredWorkspaceId.Value;
             }
             return parameters;
         }

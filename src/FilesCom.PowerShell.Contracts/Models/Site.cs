@@ -413,6 +413,11 @@ namespace FilesCom.PowerShell.Models
         public string Domain { get; internal set; }
 
         /// <summary>
+        /// Allow eligible Remote Server Mount and Files.com Agent transfer URLs to use the Site's custom domain. Enabling can serve file content from the same hostname as the signed-in web app. Disabled by default.
+        /// </summary>
+        public bool DangerouslyUseCustomDomainForTransferUrls { get; internal set; }
+
+        /// <summary>
         /// Send HSTS (HTTP Strict Transport Security) header when visitors access the site via a custom domain?
         /// </summary>
         public bool DomainHstsHeader { get; internal set; }

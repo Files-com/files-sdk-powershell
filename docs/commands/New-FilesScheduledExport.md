@@ -283,6 +283,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -ScheduleIntervalMinutes
+
+Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`.
+
+```yaml
+Type: System.Int64
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -ScheduleTimesOfDay
 
 Times of day in HH:MM format for the scheduled export schedule.

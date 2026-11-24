@@ -88,6 +88,11 @@ namespace FilesCom.PowerShell.Models
         public long?[] ScheduleDaysOfWeek { get; internal set; }
 
         /// <summary>
+        /// Set a delivery deadline every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`.
+        /// </summary>
+        public long? ScheduleIntervalMinutes { get; internal set; }
+
+        /// <summary>
         /// Times of day in HH:MM format for the Expectation schedule.
         /// </summary>
         public string[] ScheduleTimesOfDay { get; internal set; }
@@ -181,6 +186,7 @@ namespace FilesCom.PowerShell.Models
             RecurringDays = source.RecurringDays;
             ScheduleId = source.ScheduleId;
             ScheduleDaysOfWeek = source.ScheduleDaysOfWeek;
+            ScheduleIntervalMinutes = source.ScheduleIntervalMinutes;
             ScheduleTimesOfDay = source.ScheduleTimesOfDay;
             ScheduleTimeZone = source.ScheduleTimeZone;
             HolidayRegion = source.HolidayRegion;

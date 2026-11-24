@@ -115,6 +115,14 @@ namespace FilesCom.PowerShell.Commands
         [ValidateNotNull]
         public long? WorkspaceId { get; set; }
 
+        /// <summary>
+        /// Shared Workflow for which the Snapshot was created.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? SharedWorkflowId { get; set; }
+
         /// <summary>Create Snapshot.</summary>
         protected override void Execute()
         {
@@ -146,6 +154,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(WorkspaceId)))
             {
                 parameters["workspace_id"] = WorkspaceId.Value;
+            }
+            if (IsBound(nameof(SharedWorkflowId)))
+            {
+                parameters["shared_workflow_id"] = SharedWorkflowId.Value;
             }
             return parameters;
         }

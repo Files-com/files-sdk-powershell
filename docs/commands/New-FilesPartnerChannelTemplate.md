@@ -136,6 +136,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -FromPartnerUploadForms
+
+Form Field Sets for From Partner upload destinations, copied to managed Partner Channels. Each entry has a `path` relative to the From Partner folder and a `form_field_set_id`. Use an empty `path` when the Template has no managed folders. Providing this replaces all assignments, and an empty array removes them.
+
+```yaml
+Type: System.Collections.IDictionary[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -FromPartnerRoutePathPattern
 
 Optional route path pattern for files uploaded by the Partner. Supports {{partner_name}}.

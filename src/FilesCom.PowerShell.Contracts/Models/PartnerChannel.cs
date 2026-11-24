@@ -78,6 +78,11 @@ namespace FilesCom.PowerShell.Models
         public string[] FromPartnerManagedFolderPaths { get; internal set; }
 
         /// <summary>
+        /// Form Field Sets attached to From Partner upload destinations.
+        /// </summary>
+        public Models.PartnerChannelUploadForm[] FromPartnerUploadForms { get; internal set; }
+
+        /// <summary>
         /// Resolved to-Partner subfolder name. Null when the direction is disabled or uses the Channel folder directly.
         /// </summary>
         public string EffectiveToPartnerFolderName { get; internal set; }
@@ -119,6 +124,7 @@ namespace FilesCom.PowerShell.Models
             ToPartnerRoutePath = source.ToPartnerRoutePath;
             ToPartnerManagedFolderPaths = source.ToPartnerManagedFolderPaths;
             FromPartnerManagedFolderPaths = source.FromPartnerManagedFolderPaths;
+            FromPartnerUploadForms = source.FromPartnerUploadForms;
             EffectiveToPartnerFolderName = source.EffectiveToPartnerFolderName;
             EffectiveFromPartnerFolderName = source.EffectiveFromPartnerFolderName;
             ChannelPath = source.ChannelPath;

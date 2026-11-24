@@ -63,6 +63,7 @@ namespace FilesCom.PowerShell.Engine
                 LdapBaseDn = source.LdapBaseDn,
                 LdapDomain = source.LdapDomain,
                 DisplayOnLoginPage = source.DisplayOnLoginPage,
+                PublicSsoDomain = source.PublicSsoDomain,
                 LdapHost = source.LdapHost,
                 LdapHost2 = source.LdapHost2,
                 LdapHost3 = source.LdapHost3,

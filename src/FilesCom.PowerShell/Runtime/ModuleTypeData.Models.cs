@@ -31,6 +31,7 @@ namespace FilesCom.PowerShell.Runtime
             yield return Display(typeof(Models.AutomationExecutionNode), new[] { "NodeId", "NodeType", "Status", "RunStage" });
             yield return Display(typeof(Models.AutomationLog), new[] { "Path", "Status", "CreatedAt" });
             yield return Display(typeof(Models.AutomationRun), new[] { "Id", "Status", "CreatedAt" });
+            yield return Display(typeof(Models.AutomationVersion), new[] { "Id", "Username", "CreatedAt" });
             yield return Display(typeof(Models.BandwidthSnapshot), new[] { "Id", "BytesReceived", "BytesSent", "SyncBytesReceived" });
             yield return Display(typeof(Models.Behavior), new[] { "Id", "Path", "Name" }, "Behavior=BehaviorType");
             yield return Display(typeof(Models.Bundle), new[] { "Id", "Username", "CreatedAt" });
@@ -40,11 +41,13 @@ namespace FilesCom.PowerShell.Runtime
             yield return Display(typeof(Models.BundlePath), new[] { "Recursive", "Path" });
             yield return Display(typeof(Models.BundleRecipient), new[] { "Company", "Name", "Note", "Recipient" });
             yield return Display(typeof(Models.BundleRegistration), new[] { "Name", "Email", "CreatedAt" });
+            yield return Display(typeof(Models.Certificate), new[] { "Id", "Name", "Status", "CreatedAt" }, "Certificate=CertificateType");
             yield return Display(typeof(Models.ChatMessage), new[] { "Id", "CreatedAt" });
             yield return Display(typeof(Models.ChatSession), new[] { "Id", "Title", "CreatedAt" });
             yield return Display(typeof(Models.ChildSiteManagementPolicy), new[] { "Id", "Name", "CreatedAt" });
             yield return Display(typeof(Models.Clickwrap), new[] { "Id", "Name" });
             yield return Display(typeof(Models.CustomDomain), new[] { "Id", "CreatedAt" });
+            yield return Display(typeof(Models.DatabaseDestination), new[] { "Id", "Name", "CreatedAt" });
             yield return Display(typeof(Models.DesktopConfigurationProfile), new[] { "Id", "Name" });
             yield return Display(typeof(Models.DirectConnectionInfo), new[] { "Version", "ServerName", "Addresses", "DirectUri" });
             yield return Display(typeof(Models.DnsRecord), new[] { "Id", "Domain", "Rrtype", "Value" });
@@ -94,6 +97,7 @@ namespace FilesCom.PowerShell.Runtime
             yield return Display(typeof(Models.Partner), new[] { "Id", "Name" });
             yield return Display(typeof(Models.PartnerChannel), new[] { "Id", "Path" });
             yield return Display(typeof(Models.PartnerChannelTemplate), new[] { "Id", "Path", "Name" });
+            yield return Display(typeof(Models.PartnerChannelUploadForm), new[] { "Path", "FormFieldSetId" });
             yield return Display(typeof(Models.PartnerConnection), new[] { "Id", "Role", "SiteId", "SiteName" });
             yield return Display(typeof(Models.PartnerSiteRequest), new[] { "Id", "Status", "CreatedAt" });
             yield return Display(typeof(Models.PaymentLineItem), new[] { "Amount", "CreatedAt", "InvoiceId", "PaymentId" });
@@ -120,6 +124,7 @@ namespace FilesCom.PowerShell.Runtime
             yield return Display(typeof(Models.SftpHostKey), new[] { "Id", "Name" });
             yield return Display(typeof(Models.ShareGroup), new[] { "Id", "Name" });
             yield return Display(typeof(Models.ShareGroupMember), new[] { "Name", "Email" });
+            yield return Display(typeof(Models.SharedWorkflow), new[] { "Id", "Name" });
             yield return Display(typeof(Models.SiemHttpDestination), new[] { "Id", "Name" });
             yield return Display(typeof(Models.SiemHttpDestinationEvent), new[] { "Id", "Status", "CreatedAt" });
             yield return Display(typeof(Models.Site), new[] { "Id", "Name", "Email", "CreatedAt" });

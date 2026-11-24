@@ -222,6 +222,14 @@ namespace FilesCom.PowerShell.Commands
         public long[] ScheduleDaysOfWeek { get; set; }
 
         /// <summary>
+        /// Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? ScheduleIntervalMinutes { get; set; }
+
+        /// <summary>
         /// Time zone for the schedule. If not set, times are interpreted as UTC.
         /// </summary>
         [Parameter()]
@@ -362,6 +370,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(ScheduleDaysOfWeek)))
             {
                 parameters["schedule_days_of_week"] = RequestValues.Int64s(ScheduleDaysOfWeek);
+            }
+            if (IsBound(nameof(ScheduleIntervalMinutes)))
+            {
+                parameters["schedule_interval_minutes"] = ScheduleIntervalMinutes.Value;
             }
             if (IsBound(nameof(ScheduleTimeZone)))
             {
@@ -630,6 +642,15 @@ namespace FilesCom.PowerShell.Commands
         public long[] ScheduleDaysOfWeek { get; set; }
 
         /// <summary>
+        /// Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? ScheduleIntervalMinutes { get; set; }
+
+        /// <summary>
         /// Time zone for the schedule. If not set, times are interpreted as UTC.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
@@ -785,6 +806,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(ScheduleDaysOfWeek)))
             {
                 parameters["schedule_days_of_week"] = RequestValues.Int64s(ScheduleDaysOfWeek);
+            }
+            if (IsBound(nameof(ScheduleIntervalMinutes)))
+            {
+                parameters["schedule_interval_minutes"] = ScheduleIntervalMinutes.Value;
             }
             if (IsBound(nameof(ScheduleTimeZone)))
             {

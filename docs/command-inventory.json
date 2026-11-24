@@ -1,6 +1,6 @@
 {
   "generated_from_schema": "swagger_doc-production.json",
-  "schema_sha256": "ee774b2c0e674fa6e66e6715ed431f901f2b42109b2f9dd819938054dfcc5c09",
+  "schema_sha256": "3a7596569e7c22c6cc9818bf884b63fabb66548a63f882fa2fccc1c15fb17457",
   "commands": [
     {
       "name": "Approve-FilesPartnerSiteRequest",
@@ -258,6 +258,68 @@
               "wire_name": "pairing_key",
               "type": "System.String",
               "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Disable-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostCertificatesIdDeactivate",
+          "method": "POST",
+          "path": "/certificates/{id}/deactivate",
+          "sdk_member": "client.Certificates.DeactivateAsync",
+          "result": "void",
+          "result_type": null,
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enable-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostCertificatesIdActivate",
+          "method": "POST",
+          "path": "/certificates/{id}/activate",
+          "sdk_member": "client.Certificates.ActivateAsync",
+          "result": "void",
+          "result_type": null,
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
+              "name": "ReplaceCert",
+              "wire_name": "replace_cert",
+              "type": "System.String",
+              "required": false
             }
           ]
         }
@@ -1406,6 +1468,70 @@
       ]
     },
     {
+      "name": "Get-FilesAutomationVersion",
+      "model": "AutomationVersion",
+      "parameter_sets": [
+        "List",
+        "Page",
+        "Continuation",
+        "Id"
+      ],
+      "should_process": false,
+      "confirm_impact": null,
+      "operations": [
+        {
+          "operation_id": "GetAutomationVersions",
+          "method": "GET",
+          "path": "/automation_versions",
+          "sdk_member": "client.AutomationVersions.List",
+          "result": "list",
+          "result_type": "AutomationVersion",
+          "parameters": [
+            {
+              "name": "Cursor",
+              "wire_name": "cursor",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PerPage",
+              "wire_name": "per_page",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
+              "name": "SortBy",
+              "wire_name": "sort_by",
+              "type": "System.Collections.IDictionary",
+              "required": false
+            },
+            {
+              "name": "AutomationId",
+              "wire_name": "automation_id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        },
+        {
+          "operation_id": "GetAutomationVersionsId",
+          "method": "GET",
+          "path": "/automation_versions/{id}",
+          "sdk_member": "client.AutomationVersions.FindAsync",
+          "result": "model",
+          "result_type": "AutomationVersion",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Get-FilesBandwidthSnapshot",
       "model": "BandwidthSnapshot",
       "parameter_sets": [
@@ -2013,6 +2139,58 @@
       ]
     },
     {
+      "name": "Get-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+        "List",
+        "Page",
+        "Continuation",
+        "Id"
+      ],
+      "should_process": false,
+      "confirm_impact": null,
+      "operations": [
+        {
+          "operation_id": "GetCertificates",
+          "method": "GET",
+          "path": "/certificates",
+          "sdk_member": "client.Certificates.List",
+          "result": "list",
+          "result_type": "Certificate",
+          "parameters": [
+            {
+              "name": "Cursor",
+              "wire_name": "cursor",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PerPage",
+              "wire_name": "per_page",
+              "type": "System.Int64",
+              "required": false
+            }
+          ]
+        },
+        {
+          "operation_id": "GetCertificatesId",
+          "method": "GET",
+          "path": "/certificates/{id}",
+          "sdk_member": "client.Certificates.FindAsync",
+          "result": "model",
+          "result_type": "Certificate",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Get-FilesChatSession",
       "model": "ChatSession",
       "parameter_sets": [
@@ -2356,6 +2534,76 @@
           "sdk_member": "client.CustomDomains.FindAsync",
           "result": "model",
           "result_type": "CustomDomain",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Get-FilesDatabaseDestination",
+      "model": "DatabaseDestination",
+      "parameter_sets": [
+        "List",
+        "Page",
+        "Continuation",
+        "Id"
+      ],
+      "should_process": false,
+      "confirm_impact": null,
+      "operations": [
+        {
+          "operation_id": "GetDatabaseDestinations",
+          "method": "GET",
+          "path": "/database_destinations",
+          "sdk_member": "client.DatabaseDestinations.List",
+          "result": "list",
+          "result_type": "DatabaseDestination",
+          "parameters": [
+            {
+              "name": "Cursor",
+              "wire_name": "cursor",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PerPage",
+              "wire_name": "per_page",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
+              "name": "SortBy",
+              "wire_name": "sort_by",
+              "type": "System.Collections.IDictionary",
+              "required": false
+            },
+            {
+              "name": "Filter",
+              "wire_name": "filter",
+              "type": "System.Collections.IDictionary",
+              "required": false
+            },
+            {
+              "name": "FilterPrefix",
+              "wire_name": "filter_prefix",
+              "type": "System.Collections.IDictionary",
+              "required": false
+            }
+          ]
+        },
+        {
+          "operation_id": "GetDatabaseDestinationsId",
+          "method": "GET",
+          "path": "/database_destinations/{id}",
+          "sdk_member": "client.DatabaseDestinations.FindAsync",
+          "result": "model",
+          "result_type": "DatabaseDestination",
           "parameters": [
             {
               "name": "Id",
@@ -6802,6 +7050,64 @@
       ]
     },
     {
+      "name": "Get-FilesSharedWorkflow",
+      "model": "SharedWorkflow",
+      "parameter_sets": [
+        "List",
+        "Page",
+        "Continuation",
+        "Id"
+      ],
+      "should_process": false,
+      "confirm_impact": null,
+      "operations": [
+        {
+          "operation_id": "GetSharedWorkflows",
+          "method": "GET",
+          "path": "/shared_workflows",
+          "sdk_member": "client.SharedWorkflows.List",
+          "result": "list",
+          "result_type": "SharedWorkflow",
+          "parameters": [
+            {
+              "name": "Cursor",
+              "wire_name": "cursor",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PerPage",
+              "wire_name": "per_page",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
+              "name": "SortBy",
+              "wire_name": "sort_by",
+              "type": "System.Collections.IDictionary",
+              "required": false
+            }
+          ]
+        },
+        {
+          "operation_id": "GetSharedWorkflowsId",
+          "method": "GET",
+          "path": "/shared_workflows/{id}",
+          "sdk_member": "client.SharedWorkflows.FindAsync",
+          "result": "model",
+          "result_type": "SharedWorkflow",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Get-FilesSiemHttpDestination",
       "model": "SiemHttpDestination",
       "parameter_sets": [
@@ -8430,6 +8736,34 @@
       ]
     },
     {
+      "name": "Invoke-FilesCertificateReplaceWithFiles",
+      "model": "Certificate",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostCertificatesIdReplaceWithFilesCertificate",
+          "method": "POST",
+          "path": "/certificates/{id}/replace_with_files_certificate",
+          "sdk_member": "client.Certificates.ReplaceWithFilesAsync",
+          "result": "void",
+          "result_type": null,
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Invoke-FilesSiteExtendAutomationMigrationWindow",
       "model": "Site",
       "parameter_sets": [
@@ -8727,6 +9061,12 @@
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -9084,9 +9424,33 @@
               "required": false
             },
             {
+              "name": "SharedTriggerUserIds",
+              "wire_name": "shared_trigger_user_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "SharedTriggerGroupIds",
+              "wire_name": "shared_trigger_group_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "SharedTriggerPartnerIds",
+              "wire_name": "shared_trigger_partner_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -9640,6 +10004,123 @@
       ]
     },
     {
+      "name": "New-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostCertificates",
+          "method": "POST",
+          "path": "/certificates",
+          "sdk_member": "client.Certificates.CreateAsync",
+          "result": "model",
+          "result_type": "Certificate",
+          "parameters": [
+            {
+              "name": "Name",
+              "wire_name": "name",
+              "type": "System.String",
+              "required": true
+            },
+            {
+              "name": "CertificateDomain",
+              "wire_name": "certificate_domain",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CertificateExtraDomains",
+              "wire_name": "certificate_extra_domains",
+              "type": "System.String[]",
+              "required": false
+            },
+            {
+              "name": "CertificateCountry",
+              "wire_name": "certificate_country",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CertificateStateOrProvince",
+              "wire_name": "certificate_state_or_province",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CertificateCityOrLocale",
+              "wire_name": "certificate_city_or_locale",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CertificateCompanyName",
+              "wire_name": "certificate_company_name",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CsrOu1",
+              "wire_name": "csr_ou1",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CsrOu2",
+              "wire_name": "csr_ou2",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CsrOu3",
+              "wire_name": "csr_ou3",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "CertificateEmailAddress",
+              "wire_name": "certificate_email_address",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "KeyType",
+              "wire_name": "key_type",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "Certificate",
+              "wire_name": "certificate",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PrivateKey",
+              "wire_name": "private_key",
+              "type": "System.Security.SecureString",
+              "required": false
+            },
+            {
+              "name": "Password",
+              "wire_name": "password",
+              "type": "System.Security.SecureString",
+              "required": false
+            },
+            {
+              "name": "Intermediates",
+              "wire_name": "intermediates",
+              "type": "System.String",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "New-FilesChildSiteManagementPolicy",
       "model": "ChildSiteManagementPolicy",
       "parameter_sets": [
@@ -9838,6 +10319,57 @@
               "wire_name": "count",
               "type": "System.Int64",
               "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "New-FilesDatabaseDestination",
+      "model": "DatabaseDestination",
+      "parameter_sets": [
+
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostDatabaseDestinations",
+          "method": "POST",
+          "path": "/database_destinations",
+          "sdk_member": "client.DatabaseDestinations.CreateAsync",
+          "result": "model",
+          "result_type": "DatabaseDestination",
+          "parameters": [
+            {
+              "name": "Name",
+              "wire_name": "name",
+              "type": "System.String",
+              "required": true
+            },
+            {
+              "name": "Provider",
+              "wire_name": "provider",
+              "type": "System.String",
+              "required": true
+            },
+            {
+              "name": "Config",
+              "wire_name": "config",
+              "type": "System.Collections.IDictionary",
+              "required": true
+            },
+            {
+              "name": "SecretId",
+              "wire_name": "secret_id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
+              "name": "WorkspaceId",
+              "wire_name": "workspace_id",
+              "type": "System.Int64",
+              "required": false
             }
           ]
         }
@@ -10188,6 +10720,12 @@
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -11574,6 +12112,12 @@
               "required": false
             },
             {
+              "name": "FromPartnerUploadForms",
+              "wire_name": "from_partner_upload_forms",
+              "type": "System.Collections.IDictionary[]",
+              "required": false
+            },
+            {
               "name": "FromPartnerRoutePath",
               "wire_name": "from_partner_route_path",
               "type": "System.String",
@@ -11658,6 +12202,12 @@
               "name": "FromPartnerManagedFolderPaths",
               "wire_name": "from_partner_managed_folder_paths",
               "type": "System.String[]",
+              "required": false
+            },
+            {
+              "name": "FromPartnerUploadForms",
+              "wire_name": "from_partner_upload_forms",
+              "type": "System.Collections.IDictionary[]",
               "required": false
             },
             {
@@ -13005,6 +13555,12 @@
               "required": false
             },
             {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
               "name": "ScheduleTimesOfDay",
               "wire_name": "schedule_times_of_day",
               "type": "System.String[]",
@@ -13471,6 +14027,12 @@
               "wire_name": "workspace_id",
               "type": "System.Int64",
               "required": false
+            },
+            {
+              "name": "SharedWorkflowId",
+              "wire_name": "shared_workflow_id",
+              "type": "System.Int64",
+              "required": false
             }
           ]
         }
@@ -13581,6 +14143,12 @@
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -13791,8 +14359,8 @@
               "required": false
             },
             {
-              "name": "DefaultWorkspaceId",
-              "wire_name": "default_workspace_id",
+              "name": "PreferredWorkspaceId",
+              "wire_name": "preferred_workspace_id",
               "type": "System.Int64",
               "required": false
             },
@@ -14678,6 +15246,34 @@
       ]
     },
     {
+      "name": "Remove-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "High",
+      "operations": [
+        {
+          "operation_id": "DeleteCertificatesId",
+          "method": "DELETE",
+          "path": "/certificates/{id}",
+          "sdk_member": "client.Certificates.DeleteAsync",
+          "result": "void",
+          "result_type": null,
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Remove-FilesChildSiteManagementPolicy",
       "model": "ChildSiteManagementPolicy",
       "parameter_sets": [
@@ -14770,6 +15366,34 @@
           "method": "DELETE",
           "path": "/custom_domains/{id}",
           "sdk_member": "client.CustomDomains.DeleteAsync",
+          "result": "void",
+          "result_type": null,
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Remove-FilesDatabaseDestination",
+      "model": "DatabaseDestination",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "High",
+      "operations": [
+        {
+          "operation_id": "DeleteDatabaseDestinationsId",
+          "method": "DELETE",
+          "path": "/database_destinations/{id}",
+          "sdk_member": "client.DatabaseDestinations.DeleteAsync",
           "result": "void",
           "result_type": null,
           "parameters": [
@@ -16184,6 +16808,34 @@
       ]
     },
     {
+      "name": "Restore-FilesAutomationVersion",
+      "model": "AutomationVersion",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostAutomationVersionsIdRestore",
+          "method": "POST",
+          "path": "/automation_versions/{id}/restore",
+          "sdk_member": "client.AutomationVersions.RestoreAsync",
+          "result": "model",
+          "result_type": "Automation",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Send-FilesBundleShare",
       "model": "Bundle",
       "parameter_sets": [
@@ -16637,6 +17289,12 @@
               "required": false
             },
             {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
               "name": "ScheduleTimeZone",
               "wire_name": "schedule_time_zone",
               "type": "System.String",
@@ -16977,9 +17635,33 @@
               "required": false
             },
             {
+              "name": "SharedTriggerUserIds",
+              "wire_name": "shared_trigger_user_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "SharedTriggerGroupIds",
+              "wire_name": "shared_trigger_group_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "SharedTriggerPartnerIds",
+              "wire_name": "shared_trigger_partner_ids",
+              "type": "System.Int64[]",
+              "required": false
+            },
+            {
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -17461,6 +18143,52 @@
       ]
     },
     {
+      "name": "Set-FilesCertificate",
+      "model": "Certificate",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PatchCertificatesId",
+          "method": "PATCH",
+          "path": "/certificates/{id}",
+          "sdk_member": "client.Certificates.UpdateAsync",
+          "result": "model",
+          "result_type": "Certificate",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
+              "name": "Name",
+              "wire_name": "name",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "Intermediates",
+              "wire_name": "intermediates",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "Certificate",
+              "wire_name": "certificate",
+              "type": "System.String",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Set-FilesChildSiteManagementPolicy",
       "model": "ChildSiteManagementPolicy",
       "parameter_sets": [
@@ -17679,6 +18407,52 @@
               "name": "Domain",
               "wire_name": "domain",
               "type": "System.String",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Set-FilesDatabaseDestination",
+      "model": "DatabaseDestination",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PatchDatabaseDestinationsId",
+          "method": "PATCH",
+          "path": "/database_destinations/{id}",
+          "sdk_member": "client.DatabaseDestinations.UpdateAsync",
+          "result": "model",
+          "result_type": "DatabaseDestination",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
+              "name": "Name",
+              "wire_name": "name",
+              "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "SecretId",
+              "wire_name": "secret_id",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
+              "name": "Config",
+              "wire_name": "config",
+              "type": "System.Collections.IDictionary",
               "required": false
             }
           ]
@@ -18059,6 +18833,12 @@
               "name": "ScheduleDaysOfWeek",
               "wire_name": "schedule_days_of_week",
               "type": "System.Int64[]",
+              "required": false
+            },
+            {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
               "required": false
             },
             {
@@ -18461,6 +19241,12 @@
               "name": "Name",
               "wire_name": "name",
               "type": "System.String",
+              "required": false
+            },
+            {
+              "name": "PreferredWorkspaceId",
+              "wire_name": "preferred_workspace_id",
+              "type": "System.Int64",
               "required": false
             }
           ]
@@ -18999,6 +19785,12 @@
               "required": false
             },
             {
+              "name": "FromPartnerUploadForms",
+              "wire_name": "from_partner_upload_forms",
+              "type": "System.Collections.IDictionary[]",
+              "required": false
+            },
+            {
               "name": "FromPartnerRoutePath",
               "wire_name": "from_partner_route_path",
               "type": "System.String",
@@ -19078,6 +19870,12 @@
               "name": "FromPartnerManagedFolderPaths",
               "wire_name": "from_partner_managed_folder_paths",
               "type": "System.String[]",
+              "required": false
+            },
+            {
+              "name": "FromPartnerUploadForms",
+              "wire_name": "from_partner_upload_forms",
+              "type": "System.Collections.IDictionary[]",
               "required": false
             },
             {
@@ -20173,6 +20971,12 @@
               "required": false
             },
             {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
               "name": "ScheduleTimesOfDay",
               "wire_name": "schedule_times_of_day",
               "type": "System.String[]",
@@ -20645,6 +21449,12 @@
               "name": "BundleMaxUses",
               "wire_name": "bundle_max_uses",
               "type": "System.Int64",
+              "required": false
+            },
+            {
+              "name": "DangerouslyUseCustomDomainForTransferUrls",
+              "wire_name": "dangerously_use_custom_domain_for_transfer_urls",
+              "type": "System.Boolean",
               "required": false
             },
             {
@@ -21890,6 +22700,12 @@
               "required": false
             },
             {
+              "name": "ScheduleIntervalMinutes",
+              "wire_name": "schedule_interval_minutes",
+              "type": "System.Int64",
+              "required": false
+            },
+            {
               "name": "ScheduleTimeZone",
               "wire_name": "schedule_time_zone",
               "type": "System.String",
@@ -22098,8 +22914,8 @@
               "required": false
             },
             {
-              "name": "DefaultWorkspaceId",
-              "wire_name": "default_workspace_id",
+              "name": "PreferredWorkspaceId",
+              "wire_name": "preferred_workspace_id",
               "type": "System.Int64",
               "required": false
             },
@@ -22688,6 +23504,52 @@
               "wire_name": "recursive",
               "type": "System.Boolean",
               "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start-FilesSharedWorkflow",
+      "model": "SharedWorkflow",
+      "parameter_sets": [
+        "Id",
+        "InputObject"
+      ],
+      "should_process": true,
+      "confirm_impact": "Medium",
+      "operations": [
+        {
+          "operation_id": "PostSharedWorkflowsIdRunWorkflow",
+          "method": "POST",
+          "path": "/shared_workflows/{id}/run_workflow",
+          "sdk_member": "client.SharedWorkflows.RunWorkflowAsync",
+          "result": "model",
+          "result_type": "AutomationRun",
+          "parameters": [
+            {
+              "name": "Id",
+              "wire_name": "id",
+              "type": "System.Int64",
+              "required": true
+            },
+            {
+              "name": "SubmissionRevision",
+              "wire_name": "submission_revision",
+              "type": "System.String",
+              "required": true
+            },
+            {
+              "name": "SubmissionId",
+              "wire_name": "submission_id",
+              "type": "System.String",
+              "required": true
+            },
+            {
+              "name": "FilePath",
+              "wire_name": "file_path",
+              "type": "System.String",
+              "required": true
             }
           ]
         }

@@ -390,7 +390,7 @@ namespace FilesCom.PowerShell.Commands
         [Parameter()]
         [FilesInteger]
         [ValidateNotNull]
-        public long? DefaultWorkspaceId { get; set; }
+        public long? PreferredWorkspaceId { get; set; }
 
         /// <summary>
         /// Is user disabled? Disabled users cannot log in, and do not count for billing purposes. Users can be automatically disabled after an inactivity period via a Site setting or schedule to be deactivated after specific date.
@@ -829,9 +829,9 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["desktop_configuration_profile_id"] = DesktopConfigurationProfileId.Value;
             }
-            if (IsBound(nameof(DefaultWorkspaceId)))
+            if (IsBound(nameof(PreferredWorkspaceId)))
             {
-                parameters["default_workspace_id"] = DefaultWorkspaceId.Value;
+                parameters["preferred_workspace_id"] = PreferredWorkspaceId.Value;
             }
             if (IsBound(nameof(Disabled)))
             {
@@ -1353,7 +1353,7 @@ namespace FilesCom.PowerShell.Commands
         [Parameter(ParameterSetName = "InputObject")]
         [FilesInteger]
         [ValidateNotNull]
-        public long? DefaultWorkspaceId { get; set; }
+        public long? PreferredWorkspaceId { get; set; }
 
         /// <summary>
         /// Is user disabled? Disabled users cannot log in, and do not count for billing purposes. Users can be automatically disabled after an inactivity period via a Site setting or schedule to be deactivated after specific date.
@@ -1868,9 +1868,9 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["desktop_configuration_profile_id"] = DesktopConfigurationProfileId.Value;
             }
-            if (IsBound(nameof(DefaultWorkspaceId)))
+            if (IsBound(nameof(PreferredWorkspaceId)))
             {
-                parameters["default_workspace_id"] = DefaultWorkspaceId.Value;
+                parameters["preferred_workspace_id"] = PreferredWorkspaceId.Value;
             }
             if (IsBound(nameof(Disabled)))
             {

@@ -100,6 +100,7 @@ namespace FilesCom.PowerShell.Engine
                 FileActivityEventsEnabled = source.FileActivityEventsEnabled,
                 DisablePasswordReset = source.DisablePasswordReset,
                 Domain = source.Domain,
+                DangerouslyUseCustomDomainForTransferUrls = source.DangerouslyUseCustomDomainForTransferUrls,
                 DomainHstsHeader = source.DomainHstsHeader,
                 DomainLetsencryptChain = source.DomainLetsencryptChain,
                 Email = source.Email,

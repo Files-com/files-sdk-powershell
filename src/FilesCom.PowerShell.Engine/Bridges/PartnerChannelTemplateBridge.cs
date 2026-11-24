@@ -32,6 +32,7 @@ namespace FilesCom.PowerShell.Engine
                 ToPartnerRoutePathPattern = source.ToPartnerRoutePathPattern,
                 ToPartnerManagedFolderPaths = Values.Copy(source.ToPartnerManagedFolderPaths),
                 FromPartnerManagedFolderPaths = Values.Copy(source.FromPartnerManagedFolderPaths),
+                FromPartnerUploadForms = Values.Array(source.FromPartnerUploadForms, item => PartnerChannelUploadFormBridge.Project(item, connection, options)),
                 EffectiveToPartnerFolderName = source.EffectiveToPartnerFolderName,
                 EffectiveFromPartnerFolderName = source.EffectiveFromPartnerFolderName,
             };

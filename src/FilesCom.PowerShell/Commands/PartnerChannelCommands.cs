@@ -140,6 +140,14 @@ namespace FilesCom.PowerShell.Commands
         public string[] FromPartnerManagedFolderPaths { get; set; }
 
         /// <summary>
+        /// Form Field Sets for From Partner upload destinations. Each entry has a `path` relative to the From Partner folder and a `form_field_set_id`. Use an empty `path` when the Channel has no managed folders. Providing this replaces all assignments, and an empty array removes them.
+        /// </summary>
+        [Parameter()]
+        [FilesDictionary]
+        [ValidateNotNull]
+        public System.Collections.IDictionary[] FromPartnerUploadForms { get; set; }
+
+        /// <summary>
         /// Optional route path for files uploaded by the Partner.
         /// </summary>
         [Parameter()]
@@ -223,6 +231,10 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["from_partner_managed_folder_paths"] = RequestValues.Strings(FromPartnerManagedFolderPaths, "FromPartnerManagedFolderPaths");
             }
+            if (IsBound(nameof(FromPartnerUploadForms)))
+            {
+                parameters["from_partner_upload_forms"] = RequestValues.Objects(FromPartnerUploadForms, "FromPartnerUploadForms");
+            }
             if (IsBound(nameof(FromPartnerRoutePath)))
             {
                 parameters["from_partner_route_path"] = FromPartnerRoutePath;
@@ -301,6 +313,15 @@ namespace FilesCom.PowerShell.Commands
         [Parameter(ParameterSetName = "InputObject")]
         [ValidateNotNull]
         public string[] FromPartnerManagedFolderPaths { get; set; }
+
+        /// <summary>
+        /// Form Field Sets for From Partner upload destinations. Each entry has a `path` relative to the From Partner folder and a `form_field_set_id`. Use an empty `path` when the Channel has no managed folders. Providing this replaces all assignments, and an empty array removes them.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesDictionary]
+        [ValidateNotNull]
+        public System.Collections.IDictionary[] FromPartnerUploadForms { get; set; }
 
         /// <summary>
         /// Optional route path for files uploaded by the Partner.
@@ -388,6 +409,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(FromPartnerManagedFolderPaths)))
             {
                 parameters["from_partner_managed_folder_paths"] = RequestValues.Strings(FromPartnerManagedFolderPaths, "FromPartnerManagedFolderPaths");
+            }
+            if (IsBound(nameof(FromPartnerUploadForms)))
+            {
+                parameters["from_partner_upload_forms"] = RequestValues.Objects(FromPartnerUploadForms, "FromPartnerUploadForms");
             }
             if (IsBound(nameof(FromPartnerRoutePath)))
             {

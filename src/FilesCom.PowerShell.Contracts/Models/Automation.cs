@@ -193,6 +193,11 @@ namespace FilesCom.PowerShell.Models
         public long?[] ScheduleDaysOfWeek { get; internal set; }
 
         /// <summary>
+        /// Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`. For v2 Automations, set this field in the Scheduled trigger's definition.
+        /// </summary>
+        public long? ScheduleIntervalMinutes { get; internal set; }
+
+        /// <summary>
         /// Times of day to run in HH:MM format (24-hour). For `custom_schedule`, run at these times on specified days of week. For `daily`, run at these times on the scheduled interval date.
         /// </summary>
         public string[] ScheduleTimesOfDay { get; internal set; }
@@ -206,6 +211,21 @@ namespace FilesCom.PowerShell.Models
         /// Source path/glob.  See Automation docs for exact description, but this is used to filter for files in the `path` to find files to operate on. Supports globs, except on remote mounts.
         /// </summary>
         public string Source { get; internal set; }
+
+        /// <summary>
+        /// Users who can start this Shared Workflow.
+        /// </summary>
+        public long?[] SharedTriggerUserIds { get; internal set; }
+
+        /// <summary>
+        /// Groups whose members can start this Shared Workflow.
+        /// </summary>
+        public long?[] SharedTriggerGroupIds { get; internal set; }
+
+        /// <summary>
+        /// Partners whose users can start this Shared Workflow.
+        /// </summary>
+        public long?[] SharedTriggerPartnerIds { get; internal set; }
 
         /// <summary>
         /// IDs of Syncs to run by this Automation.
@@ -238,7 +258,7 @@ namespace FilesCom.PowerShell.Models
         public object Value { get; internal set; }
 
         /// <summary>
-        /// If trigger is `webhook`, this is the URL of the webhook to trigger the Automation.
+        /// If trigger is `webhook`, this is the URL to start the Automation. For a v2 webhook configured to upload a file, POST multipart form data with a single `file` part or send a raw body with the `X-Files-Filename` header. A JSON body is saved as `payload.json` when the header is omitted.
         /// </summary>
         public string WebhookUrl { get; internal set; }
 
@@ -287,9 +307,13 @@ namespace FilesCom.PowerShell.Models
             Schedule = source.Schedule;
             HumanReadableSchedule = source.HumanReadableSchedule;
             ScheduleDaysOfWeek = source.ScheduleDaysOfWeek;
+            ScheduleIntervalMinutes = source.ScheduleIntervalMinutes;
             ScheduleTimesOfDay = source.ScheduleTimesOfDay;
             ScheduleTimeZone = source.ScheduleTimeZone;
             Source = source.Source;
+            SharedTriggerUserIds = source.SharedTriggerUserIds;
+            SharedTriggerGroupIds = source.SharedTriggerGroupIds;
+            SharedTriggerPartnerIds = source.SharedTriggerPartnerIds;
             SyncIds = source.SyncIds;
             TriggerActions = source.TriggerActions;
             Trigger = source.Trigger;

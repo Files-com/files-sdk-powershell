@@ -88,6 +88,11 @@ namespace FilesCom.PowerShell.Models
         public long? IntegrationCentricProfileId { get; internal set; }
 
         /// <summary>
+        /// Custom Workspace a new Group member will use as their Preferred Workspace if they have no saved preference. The Group must have a Permission in that Workspace.
+        /// </summary>
+        public long? PreferredWorkspaceId { get; internal set; }
+
+        /// <summary>
         /// Site ID
         /// </summary>
         public long? SiteId { get; internal set; }
@@ -116,6 +121,7 @@ namespace FilesCom.PowerShell.Models
             S3CompatibleEndpointPermission = source.S3CompatibleEndpointPermission;
             DesktopConfigurationProfileId = source.DesktopConfigurationProfileId;
             IntegrationCentricProfileId = source.IntegrationCentricProfileId;
+            PreferredWorkspaceId = source.PreferredWorkspaceId;
             SiteId = source.SiteId;
             WorkspaceId = source.WorkspaceId;
         }

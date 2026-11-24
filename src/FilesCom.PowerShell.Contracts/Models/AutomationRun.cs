@@ -18,6 +18,21 @@ namespace FilesCom.PowerShell.Models
         public long? Id { get; internal set; }
 
         /// <summary>
+        /// Automation run completion/failure date/time.
+        /// </summary>
+        public DateTime? CompletedAt { get; internal set; }
+
+        /// <summary>
+        /// Automation run start date/time.
+        /// </summary>
+        public DateTime? CreatedAt { get; internal set; }
+
+        /// <summary>
+        /// The status of the AutomationRun. One of `queued`, `running`, `success`, `partial_failure`, `failure`, `skipped`, or `canceled`.
+        /// </summary>
+        public string Status { get; internal set; }
+
+        /// <summary>
         /// ID of the associated Automation.
         /// </summary>
         public long? AutomationId { get; internal set; }
@@ -38,19 +53,19 @@ namespace FilesCom.PowerShell.Models
         public long? WorkspaceId { get; internal set; }
 
         /// <summary>
+        /// User who initiated a Shared Workflow run.
+        /// </summary>
+        public long? InitiatingUserId { get; internal set; }
+
+        /// <summary>
+        /// Interface from which the Shared Workflow was started.
+        /// </summary>
+        public string InitiatingInterface { get; internal set; }
+
+        /// <summary>
         /// Date/time at which cancellation was requested.
         /// </summary>
         public DateTime? CancelRequestedAt { get; internal set; }
-
-        /// <summary>
-        /// Automation run completion/failure date/time.
-        /// </summary>
-        public DateTime? CompletedAt { get; internal set; }
-
-        /// <summary>
-        /// Automation run start date/time.
-        /// </summary>
-        public DateTime? CreatedAt { get; internal set; }
 
         /// <summary>
         /// If set, this automation will be retried at this date/time due to `failure` or `partial_failure`.
@@ -86,11 +101,6 @@ namespace FilesCom.PowerShell.Models
         /// Automation run runtime.
         /// </summary>
         public double? Runtime { get; internal set; }
-
-        /// <summary>
-        /// The status of the AutomationRun. One of `queued`, `running`, `success`, `partial_failure`, `failure`, `skipped`, or `canceled`.
-        /// </summary>
-        public string Status { get; internal set; }
 
         /// <summary>
         /// Count of successful operations.
@@ -132,13 +142,16 @@ namespace FilesCom.PowerShell.Models
         internal void CopyFrom(AutomationRun source)
         {
             Id = source.Id;
+            CompletedAt = source.CompletedAt;
+            CreatedAt = source.CreatedAt;
+            Status = source.Status;
             AutomationId = source.AutomationId;
             AutomationVersionId = source.AutomationVersionId;
             Version = source.Version;
             WorkspaceId = source.WorkspaceId;
+            InitiatingUserId = source.InitiatingUserId;
+            InitiatingInterface = source.InitiatingInterface;
             CancelRequestedAt = source.CancelRequestedAt;
-            CompletedAt = source.CompletedAt;
-            CreatedAt = source.CreatedAt;
             RetryAt = source.RetryAt;
             RetriedAt = source.RetriedAt;
             RetriedInRunId = source.RetriedInRunId;
@@ -146,7 +159,6 @@ namespace FilesCom.PowerShell.Models
             RerunOfRunId = source.RerunOfRunId;
             RerunFromNodeId = source.RerunFromNodeId;
             Runtime = source.Runtime;
-            Status = source.Status;
             SuccessfulOperations = source.SuccessfulOperations;
             FailedOperations = source.FailedOperations;
             Definition = source.Definition;

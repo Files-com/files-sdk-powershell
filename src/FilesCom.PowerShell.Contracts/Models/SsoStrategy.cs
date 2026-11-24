@@ -228,6 +228,11 @@ namespace FilesCom.PowerShell.Models
         public bool DisplayOnLoginPage { get; internal set; }
 
         /// <summary>
+        /// Username domain that can publicly discover this SSO provider on this site. Set to null to turn off discovery.
+        /// </summary>
+        public string PublicSsoDomain { get; internal set; }
+
+        /// <summary>
         /// LDAP host
         /// </summary>
         public string LdapHost { get; internal set; }

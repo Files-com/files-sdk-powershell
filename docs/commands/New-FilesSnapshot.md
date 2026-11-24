@@ -136,6 +136,27 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -SharedWorkflowId
+
+Shared Workflow for which the Snapshot was created.
+
+```yaml
+Type: System.Int64
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Connection
 
 The connection to use, from Connect-FilesAccount. Defaults to the connection of the -InputObject or -Continuation given, and otherwise to the current runspace's default connection.

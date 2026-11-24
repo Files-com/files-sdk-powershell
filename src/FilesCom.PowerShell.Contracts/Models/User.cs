@@ -390,7 +390,7 @@ namespace FilesCom.PowerShell.Models
         /// <summary>
         /// Workspace ID the user should land in by default when more than one Workspace is available.
         /// </summary>
-        public long? DefaultWorkspaceId { get; internal set; }
+        public long? PreferredWorkspaceId { get; internal set; }
 
         /// <summary>
         /// Skip Welcome page in the UI?
@@ -536,7 +536,7 @@ namespace FilesCom.PowerShell.Models
             WorkspaceAdmin = source.WorkspaceAdmin;
             SiteId = source.SiteId;
             WorkspaceId = source.WorkspaceId;
-            DefaultWorkspaceId = source.DefaultWorkspaceId;
+            PreferredWorkspaceId = source.PreferredWorkspaceId;
             SkipWelcomeScreen = source.SkipWelcomeScreen;
             FtpTlsSessionReuseRequired = source.FtpTlsSessionReuseRequired;
             SslRequired = source.SslRequired;

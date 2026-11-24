@@ -172,6 +172,13 @@ namespace FilesCom.PowerShell.Commands
         public long? BundleMaxUses { get; set; }
 
         /// <summary>
+        /// Allow eligible Remote Server Mount and Files.com Agent transfer URLs to use the Site's custom domain. Enabling can serve file content from the same hostname as the signed-in web app. Disabled by default.
+        /// </summary>
+        [Parameter()]
+        [ValidateNotNull]
+        public bool? DangerouslyUseCustomDomainForTransferUrls { get; set; }
+
+        /// <summary>
         /// Will the welcome email be sent to new users?
         /// </summary>
         [Parameter()]
@@ -1454,6 +1461,10 @@ namespace FilesCom.PowerShell.Commands
             if (IsBound(nameof(BundleMaxUses)))
             {
                 parameters["bundle_max_uses"] = BundleMaxUses.Value;
+            }
+            if (IsBound(nameof(DangerouslyUseCustomDomainForTransferUrls)))
+            {
+                parameters["dangerously_use_custom_domain_for_transfer_urls"] = DangerouslyUseCustomDomainForTransferUrls.Value;
             }
             if (IsBound(nameof(WelcomeEmailEnabled)))
             {

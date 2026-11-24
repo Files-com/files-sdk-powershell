@@ -27,6 +27,7 @@ namespace FilesCom.PowerShell.Engine
                 UserId = source.UserId,
                 BundleId = source.BundleId,
                 WorkspaceId = source.WorkspaceId,
+                SharedWorkflowId = source.SharedWorkflowId,
             };
         }
 

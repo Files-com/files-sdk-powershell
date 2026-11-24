@@ -95,7 +95,7 @@ namespace FilesCom.PowerShell.Engine
                 WorkspaceAdmin = source.WorkspaceAdmin,
                 SiteId = source.SiteId,
                 WorkspaceId = source.WorkspaceId,
-                DefaultWorkspaceId = source.DefaultWorkspaceId,
+                PreferredWorkspaceId = source.PreferredWorkspaceId,
                 SkipWelcomeScreen = source.SkipWelcomeScreen,
                 FtpTlsSessionReuseRequired = source.FtpTlsSessionReuseRequired,
                 SslRequired = source.SslRequired,

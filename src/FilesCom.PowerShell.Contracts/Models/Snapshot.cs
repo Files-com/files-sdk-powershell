@@ -47,6 +47,11 @@ namespace FilesCom.PowerShell.Models
         /// </summary>
         public long? WorkspaceId { get; internal set; }
 
+        /// <summary>
+        /// Shared Workflow for which the Snapshot was created.
+        /// </summary>
+        public long? SharedWorkflowId { get; internal set; }
+
         // Takes the values Files.com returned for this same resource after a change, so an -InputObject shows its
         // resource as it now is. The object keeps its connection.
         internal void CopyFrom(Snapshot source)
@@ -58,6 +63,7 @@ namespace FilesCom.PowerShell.Models
             UserId = source.UserId;
             BundleId = source.BundleId;
             WorkspaceId = source.WorkspaceId;
+            SharedWorkflowId = source.SharedWorkflowId;
         }
     }
 }

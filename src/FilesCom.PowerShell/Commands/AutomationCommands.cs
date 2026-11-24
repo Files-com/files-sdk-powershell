@@ -262,6 +262,30 @@ namespace FilesCom.PowerShell.Commands
         public long? ScheduleId { get; set; }
 
         /// <summary>
+        /// Users who can start this Shared Workflow.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerUserIds { get; set; }
+
+        /// <summary>
+        /// Groups whose members can start this Shared Workflow.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerGroupIds { get; set; }
+
+        /// <summary>
+        /// Partners whose users can start this Shared Workflow.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerPartnerIds { get; set; }
+
+        /// <summary>
         /// If trigger is `custom_schedule` without `schedule_id`, a list of days of the week to run this automation. 0 is Sunday, 1 is Monday, etc.
         /// </summary>
         [Parameter()]
@@ -270,7 +294,15 @@ namespace FilesCom.PowerShell.Commands
         public long[] ScheduleDaysOfWeek { get; set; }
 
         /// <summary>
-        /// Times of day to run in HH:MM format (24-hour). Required for `custom_schedule` without `schedule_id`. Optional for `daily` triggers; if not set, runs at midnight UTC.
+        /// Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`. For v2 Automations, set this field in the Scheduled trigger's definition.
+        /// </summary>
+        [Parameter()]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? ScheduleIntervalMinutes { get; set; }
+
+        /// <summary>
+        /// Times of day to run in HH:MM format (24-hour). Required for `custom_schedule` without `schedule_id` or `schedule_interval_minutes`. For `daily` triggers, the default is midnight UTC.
         /// </summary>
         [Parameter()]
         [ValidateNotNull]
@@ -509,9 +541,25 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["schedule_id"] = ScheduleId.Value;
             }
+            if (IsBound(nameof(SharedTriggerUserIds)))
+            {
+                parameters["shared_trigger_user_ids"] = RequestValues.Int64s(SharedTriggerUserIds);
+            }
+            if (IsBound(nameof(SharedTriggerGroupIds)))
+            {
+                parameters["shared_trigger_group_ids"] = RequestValues.Int64s(SharedTriggerGroupIds);
+            }
+            if (IsBound(nameof(SharedTriggerPartnerIds)))
+            {
+                parameters["shared_trigger_partner_ids"] = RequestValues.Int64s(SharedTriggerPartnerIds);
+            }
             if (IsBound(nameof(ScheduleDaysOfWeek)))
             {
                 parameters["schedule_days_of_week"] = RequestValues.Int64s(ScheduleDaysOfWeek);
+            }
+            if (IsBound(nameof(ScheduleIntervalMinutes)))
+            {
+                parameters["schedule_interval_minutes"] = ScheduleIntervalMinutes.Value;
             }
             if (IsBound(nameof(ScheduleTimesOfDay)))
             {
@@ -823,6 +871,33 @@ namespace FilesCom.PowerShell.Commands
         public long? ScheduleId { get; set; }
 
         /// <summary>
+        /// Users who can start this Shared Workflow.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerUserIds { get; set; }
+
+        /// <summary>
+        /// Groups whose members can start this Shared Workflow.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerGroupIds { get; set; }
+
+        /// <summary>
+        /// Partners whose users can start this Shared Workflow.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long[] SharedTriggerPartnerIds { get; set; }
+
+        /// <summary>
         /// If trigger is `custom_schedule` without `schedule_id`, a list of days of the week to run this automation. 0 is Sunday, 1 is Monday, etc.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
@@ -832,7 +907,16 @@ namespace FilesCom.PowerShell.Commands
         public long[] ScheduleDaysOfWeek { get; set; }
 
         /// <summary>
-        /// Times of day to run in HH:MM format (24-hour). Required for `custom_schedule` without `schedule_id`. Optional for `daily` triggers; if not set, runs at midnight UTC.
+        /// Run every N minutes (1–59, subject to the Site plan minimum). Use by itself with `custom_schedule`. For v2 Automations, set this field in the Scheduled trigger's definition.
+        /// </summary>
+        [Parameter(ParameterSetName = "Id")]
+        [Parameter(ParameterSetName = "InputObject")]
+        [FilesInteger]
+        [ValidateNotNull]
+        public long? ScheduleIntervalMinutes { get; set; }
+
+        /// <summary>
+        /// Times of day to run in HH:MM format (24-hour). Required for `custom_schedule` without `schedule_id` or `schedule_interval_minutes`. For `daily` triggers, the default is midnight UTC.
         /// </summary>
         [Parameter(ParameterSetName = "Id")]
         [Parameter(ParameterSetName = "InputObject")]
@@ -1101,9 +1185,25 @@ namespace FilesCom.PowerShell.Commands
             {
                 parameters["schedule_id"] = ScheduleId.Value;
             }
+            if (IsBound(nameof(SharedTriggerUserIds)))
+            {
+                parameters["shared_trigger_user_ids"] = RequestValues.Int64s(SharedTriggerUserIds);
+            }
+            if (IsBound(nameof(SharedTriggerGroupIds)))
+            {
+                parameters["shared_trigger_group_ids"] = RequestValues.Int64s(SharedTriggerGroupIds);
+            }
+            if (IsBound(nameof(SharedTriggerPartnerIds)))
+            {
+                parameters["shared_trigger_partner_ids"] = RequestValues.Int64s(SharedTriggerPartnerIds);
+            }
             if (IsBound(nameof(ScheduleDaysOfWeek)))
             {
                 parameters["schedule_days_of_week"] = RequestValues.Int64s(ScheduleDaysOfWeek);
+            }
+            if (IsBound(nameof(ScheduleIntervalMinutes)))
+            {
+                parameters["schedule_interval_minutes"] = ScheduleIntervalMinutes.Value;
             }
             if (IsBound(nameof(ScheduleTimesOfDay)))
             {

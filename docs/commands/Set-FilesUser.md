@@ -687,7 +687,7 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -DefaultWorkspaceId
+### -PreferredWorkspaceId
 
 Workspace ID the user should land in by default when more than one Workspace is available.
 

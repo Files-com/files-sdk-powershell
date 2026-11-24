@@ -35,6 +35,7 @@ namespace FilesCom.PowerShell.Engine
                 S3CompatibleEndpointPermission = source.S3CompatibleEndpointPermission,
                 DesktopConfigurationProfileId = source.DesktopConfigurationProfileId,
                 IntegrationCentricProfileId = source.IntegrationCentricProfileId,
+                PreferredWorkspaceId = source.PreferredWorkspaceId,
                 SiteId = source.SiteId,
                 WorkspaceId = source.WorkspaceId,
             };
