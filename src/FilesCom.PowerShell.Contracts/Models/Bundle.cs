@@ -143,7 +143,7 @@ namespace FilesCom.PowerShell.Models
         public DateTime? DeletedAt { get; internal set; }
 
         /// <summary>
-        /// Do not create subfolders for files uploaded to this share. Note: there are subtle security pitfalls with allowing anonymous uploads from multiple users to live in the same folder. We strongly discourage use of this option unless absolutely required.
+        /// Do not create subfolders for files uploaded to this share. Upload-only Share Links with non-recursive folder access require this to be true. If omitted on create, the API sets it to true for those links. Note: there are subtle security pitfalls with allowing anonymous uploads from multiple users to live in the same folder. We strongly discourage use of this option unless absolutely required.
         /// </summary>
         public bool DontSeparateSubmissionsByFolder { get; internal set; }
 

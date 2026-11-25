@@ -34,6 +34,8 @@ namespace FilesCom.PowerShell.Engine
                 Outputs = Values.Json(source.Outputs),
                 InputItems = Values.Json(source.InputItems),
                 OutputItems = Values.Json(source.OutputItems),
+                ItemRefs = Values.JsonArray(source.ItemRefs),
+                ItemValues = Values.JsonArray(source.ItemValues),
             };
         }
     }

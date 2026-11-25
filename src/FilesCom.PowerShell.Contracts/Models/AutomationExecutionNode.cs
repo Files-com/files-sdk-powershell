@@ -73,13 +73,23 @@ namespace FilesCom.PowerShell.Models
         public object Outputs { get; internal set; }
 
         /// <summary>
-        /// Materialized input items currently available, grouped by inlet.
+        /// Available input items grouped by inlet. Resolve large values with item_refs and item_values.
         /// </summary>
         public object InputItems { get; internal set; }
 
         /// <summary>
-        /// Materialized output items grouped by outlet.
+        /// Output items grouped by outlet. Resolve large values with item_refs and item_values.
         /// </summary>
         public object OutputItems { get; internal set; }
+
+        /// <summary>
+        /// References with a path from the response root and a digest. Replace the null at each path with the value for that digest. Path segments are literal object keys or zero-based array indexes.
+        /// </summary>
+        public object[] ItemRefs { get; internal set; }
+
+        /// <summary>
+        /// Ordered entries with a digest, a value, and optional item_refs relative to that value. References inside entries point to earlier entries in this array.
+        /// </summary>
+        public object[] ItemValues { get; internal set; }
     }
 }
